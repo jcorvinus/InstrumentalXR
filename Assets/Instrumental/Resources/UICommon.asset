@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f0ae6cdea49955748a728d49e5969686, type: 3}
+  m_Name: UICommon
+  m_EditorClassIdentifier: 
+  grabClip: {fileID: 8300000, guid: 3a6751af8abd10040bedc65e6b99a58a, type: 3}
+  itemPlaceClip: {fileID: 8300000, guid: f1c692e6c8df5de4f9f6f026c689bd99, type: 3}
+  errorClip: {fileID: 8300000, guid: 54d9287a6aa0c6744a4e33f7e336de92, type: 3}
+  alertClip: {fileID: 8300000, guid: 96392353aa5eebc4caebb5f039114aaf, type: 3}
+  masterGroup: {fileID: 24300002, guid: 68d340510be90ad4494a9f1947bcff61, type: 2}
