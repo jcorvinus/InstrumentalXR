@@ -14,6 +14,9 @@ namespace Instrumental.Modeling.ProceduralGraphics
 
 		[SerializeField] int widthVertCount = 4;
 
+		[Range(0,3)]
+		[SerializeField] int bevelSliceCount = 1;
+
 		[Range(0, 1)]
 		[SerializeField]
 		float extrusionDepth;
@@ -22,12 +25,20 @@ namespace Instrumental.Modeling.ProceduralGraphics
 		[SerializeField]
 		float radius;
 
-		[SerializeField]
-		bool closeLoop;
+		//[SerializeField]
+		bool closeLoop = true;
 
 		[Range(0,0.1f)]
 		[SerializeField]
 		float width;
+
+		[Range(0, 1)]
+		[SerializeField]
+		float bevelRadius;
+
+		[Range(0, 1)]
+		[SerializeField]
+		float bevelExtrusionDepth;
 
 		MeshFilter meshFilter;
 		MeshRenderer meshRenderer;
@@ -36,6 +47,9 @@ namespace Instrumental.Modeling.ProceduralGraphics
 		EdgeLoop backLoop;
 		EdgeLoop frontLoop;
 		EdgeBridge backFrontBridge;
+
+		EdgeLoop[] faceBevelLoops;
+		EdgeBridge[] faceBevelBridges;
 		Vector3[] vertices;
 		int[] triangles;
 
@@ -45,6 +59,7 @@ namespace Instrumental.Modeling.ProceduralGraphics
 		[Header("Debug Variables")]
 		[SerializeField] bool drawLoops;
 		[SerializeField] bool drawMesh;
+		[SerializeField] bool regenerate;
 
 		private void Awake()
 		{
@@ -73,6 +88,8 @@ namespace Instrumental.Modeling.ProceduralGraphics
 
 		void GenerateMesh()
 		{
+			int bridgeCount = 0;
+
 			int baseID = 0;
 			backLoop = ModelUtils.CreateEdgeLoop(ref baseID, closeLoop,
 				EdgeLoopVertCount);
@@ -80,16 +97,43 @@ namespace Instrumental.Modeling.ProceduralGraphics
 			frontLoop = ModelUtils.CreateEdgeLoop(ref baseID, closeLoop,
 				EdgeLoopVertCount);
 
-			vertices = new Vector3[backLoop.VertCount + frontLoop.VertCount];
+			faceBevelLoops = new EdgeLoop[bevelSliceCount];
+			for(int i=0; i < bevelSliceCount; i++)
+			{
+				faceBevelLoops[i] = ModelUtils.CreateEdgeLoop(ref baseID, closeLoop,
+					EdgeLoopVertCount);
+				bridgeCount++;
+			}
+
+			vertices = new Vector3[backLoop.VertCount + frontLoop.VertCount + (EdgeLoopVertCount * bevelSliceCount)];
 
 			SetVertices();
 
 			int triangleBaseID = 0;
 			backFrontBridge = ModelUtils.CreateExtrustion(ref triangleBaseID,
 				frontLoop, backLoop);
+			bridgeCount++;
 
-			triangles = new int[backFrontBridge.GetTriangleIndexCount()];
+			triangles = new int[backFrontBridge.GetTriangleIndexCount() * bridgeCount];
 			backFrontBridge.TriangulateBridge(ref triangles, false);
+
+			// do face bevel bridges
+			faceBevelBridges = new EdgeBridge[bridgeCount];
+
+			EdgeLoop firstLoop = frontLoop;
+			for(int i=0; i < bevelSliceCount; i++)
+			{
+				EdgeLoop secondLoop = faceBevelLoops[i];
+
+				faceBevelBridges[i] = ModelUtils.CreateExtrustion(ref triangleBaseID, firstLoop, secondLoop);
+				faceBevelBridges[i].TriangulateBridge(ref triangles, false);
+
+				firstLoop = secondLoop;
+			}
+
+			// check to see if we're using our last bevel loop/bridge properly
+
+			// do a loop fill on the last loop to fill our face in.
 		}
 
 		void SetVertices()
@@ -122,6 +166,35 @@ namespace Instrumental.Modeling.ProceduralGraphics
 
 				iterator++;
 			}
+
+			// do our face bevel verts
+			float extraExtrudeDepth = extrusionDepth * bevelExtrusionDepth;
+			float totalExtrudeDepth = extraExtrudeDepth;
+			float innerRadius = radius * bevelRadius;
+			for(int i=0; i < bevelSliceCount; i++)
+			{
+				float depthTValue = ((float)i + 1) / (float)bevelSliceCount; // precision loss is happening here.
+				float tValue = (float)i / (float)bevelSliceCount;
+				int startIndex = faceBevelLoops[i].VertexBaseID;
+				int endIndex = startIndex + faceBevelLoops[i].VertCount;
+
+				float sliceRadius = MathSupplement.Sinerp(innerRadius, radius, 1 - depthTValue);
+				float sliceDepth = (i == bevelSliceCount -1) ? Mathf.Lerp(extrusionDepth, totalExtrudeDepth, ((1 - tValue) +  (1 - depthTValue)) * 0.5f) : Mathf.Lerp(extrusionDepth, totalExtrudeDepth, 1 - depthTValue);
+
+				iterator = 0;
+				for (int index = startIndex; index < endIndex; index++)
+				{
+					float angle = angleIncrement * iterator;
+
+					Vector3 vertex = Vector3.up * sliceRadius;
+					vertex = Quaternion.AngleAxis(angle, Vector3.forward) * vertex;
+					vertex -= (Vector3.forward * sliceDepth);
+
+					vertices[index] = vertex;
+
+					iterator++;
+				}
+			}
 		}
 
 		// Update is called once per frame
@@ -132,6 +205,12 @@ namespace Instrumental.Modeling.ProceduralGraphics
 
 		private void OnDrawGizmosSelected()
 		{
+			if(regenerate)
+			{
+				regenerate = false;
+				GenerateMesh();
+			}
+
 			if (drawLoops)
 			{
 				Gizmos.color = Color.blue;
@@ -139,6 +218,12 @@ namespace Instrumental.Modeling.ProceduralGraphics
 
 				Gizmos.color = Color.yellow;
 				ModelUtils.DrawEdgeLoopGizmo(vertices, backLoop);
+
+				Gizmos.color = Color.green;
+				for(int i=0; i < faceBevelLoops.Length; i++)
+				{
+					ModelUtils.DrawEdgeLoopGizmo(vertices, faceBevelLoops[i]);
+				}
 			}
 
 			if (drawMesh)

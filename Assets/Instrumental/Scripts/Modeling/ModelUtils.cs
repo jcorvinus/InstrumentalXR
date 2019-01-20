@@ -5,6 +5,7 @@ using UnityEngine;
 namespace Instrumental.Modeling
 {
 	/// <summary>Describes a sequence of edges.</summary>
+	[System.Serializable] // disable when not debugging.
 	public struct EdgeLoop
 	{
 		/// <summary>Indicates how many vertices are in this loop.</summary>
@@ -28,6 +29,7 @@ namespace Instrumental.Modeling
 	}
 
 	/// <summary>Describes a series of triangles that connect two edge loops.</summary>
+	[System.Serializable]  // disable when not debugging.
 	public struct EdgeBridge
 	{
 		public EdgeLoop LoopA;
@@ -63,7 +65,7 @@ namespace Instrumental.Modeling
 
 			// start at base ID, loop through segments.
 			// each segment gets 2 triangles, or 6 indeces
-			for(int i=TriangleBaseID; i < segmentCount; i++)
+			for(int i=0; i < segmentCount; i++)
 			{
 				int currentVert = i;
 				int nextVert = (segmentCount - 1 == i) ? 0 : i + 1;
