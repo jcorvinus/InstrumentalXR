@@ -8,10 +8,10 @@ A procedural UI toolkit &amp; spec for creating fully 3d, physics-based, instrum
 
 ## This project is in pre-alpha and probably won't work for you. That's OK. Be patient.
 
-#License Information
+# License Information
 Instrumental incorporates the following licensed technology:
 
-##Punchkeyboard
+## Punchkeyboard
 The MIT License (MIT)
 
 Copyright (c) 2017 Jonathan Ravasz
