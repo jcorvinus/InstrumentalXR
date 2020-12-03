@@ -1,0 +1,77 @@
+- Get a simple resizable panel working.
+- Create a keyvalue/pair binding list for mapping schema controls to runtime controls.
+	- Upon loading a schema (editor or runtime), populate the runtime control list with proper data from the schema.
+	
+- Fillet panel struggles with no radius segments, it's a triangle index bug of some kind.
+- Depth, and extrude handles. Figure out how to change mode of fillet panel to allow extrude
+- use RED chan as a color palette inspiration
+- Color picker for panel background and outlines
+- outline and extrude fails if you don't also do back face.
+- Add ability to move the work table height.
+
+- Square panel can use leap outline graphic for outlines
+	(there doesn't seem to be a non graphic renderer equivalent though - make one of our own?)
+- Figure out how to support multiple colliders on a placeholder object. Currently they cause the space switching to break.
+- Ignore collisions between work table and panel to prevent bouncing and popping
+
+Design for color dropper and all other tools:
+- InventoryMarkerClass
+	- Lets you store controls as well as tools.
+- Goes in wrist-mounted anchor slots
+- handheld tools can have a menu pulled out of them keiichi slider style
+	- In fact, let's use that for the tools menu too.
+	- Oh maybe the tools menu can be a rotating thing - like a store jewelry display that spins in place with multiple faces. This would let us stick it to the control palette
+	
+- Study '3d text' from 98 to early 00's to see how they kept things readable even with extrusions. Might not be too helpful though because all examples from then were fixed-perspective, whereas VR is continuously variable perspective. (One advancement we've made recently in this area is the skate-frame extrude. Extrude upwards, inset the border faces w/o profile change, then extrude those inset faces outwards). It looks like the most important thing for readability is the strength of the silhouette - this gets muddied if the extruded section seamlessly blends into the face section. We can still have depth information here though - make the extruded section a different 'outline' color but it can have a depth-based gradient to it.
+	
+Pull-out heirarchy:
+- Main
+	-Panel (This gets stretched)
+	-Slider
+		-Ball Object
+	-Name (show when hovering or looking)
+	
+	Slider will need some kind of return to center, as well as 'lock to edges' behavior. Perhaps we can do this by directly setting the slider values?
+	
+- graphic group index and connected renderer appear to be getting corrupted in HandleRuntimeAddRemove() ?
+	- Looks like HandleRuntimeAddRemove is getting run twice?
+	- (because detaching and attaching operations get bucketed, it looks like detach is getting called after attach. This might be a bug worthy of reporting. A workaround is to distribute these operations across frames)
+	
+- Graphic group switching runs into issues if you go quickly from palette to panel, works if you slowly go through each zone
+
+- placement controls need to stick to UI panels (Either go kinematic or do force trickery) after they've been placed
+	- make it so that you can throw controls onto UI panels. This is dumb but it should be supported
+
+
+https://github.com/sigtrapgames/SmartData use this for letting users do data connections?
+
+Min and max dimensions:
+max: x: 0.9, y: 0.6
+min: x: 0.09, y: 0.09
+
+Floating object values:
+Mass: 1
+drag: 8
+Angular Drag: 16
+
+-----------------------------------
+Button edgeloop:
+corner segment is cornerVertCount
+
+0-cornerVertCount: upper left
+cornerVertCount-widthCount: upper
+widthCount-widthCount+cornerVertCount: upperRight
+
+Leap compatible punchkeyboard can be done with a 'put hands in zone to get beam-based pinch keyboard'
+
+
+use NVENC to record in obs
+
+------------------------------------
+Solving the 'tightly packed gizmos' issue:
+perhaps we can have a single ball-shaped gizmo that expands when hovered near, into a radial segment of other balls. The other balls can show axial constraints and names as you get closer to them. (Maybe we can do this craigslist-maps style, where the number of gizmos underneath can be a number inside of a ball)
+	
+-------------------------
+Interaction Engine Requests:
+- Leap Spaces should have some kind of gizmo for moving and rotating. The spherical space should be capable of being inverted, and the cylindrical space should be capable of having its axis changed.
+- Leap Anchors don't properly handle curved spaces
