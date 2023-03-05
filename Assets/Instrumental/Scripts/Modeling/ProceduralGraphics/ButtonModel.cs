@@ -15,6 +15,7 @@ namespace Instrumental.Modeling.ProceduralGraphics
 		[Range(2, 8)]
 		[SerializeField] int cornerVertCount = 4;
 
+		[Range(0, 8)]
 		[SerializeField] int widthVertCount = 4;
 
 		[Range(0,3)]
@@ -148,9 +149,9 @@ namespace Instrumental.Modeling.ProceduralGraphics
 		
 		void LoopSide(int baseID, bool isLeft, float depth, float sideRadius)
 		{
-			float angleIncrement = 180 / ((cornerVertCount * 2));
+			float angleIncrement = 180f / (((float)cornerVertCount * 2f) - 1);
 
-			for(int i=0; i < cornerVertCount * 2; i++)
+			for (int i = 0; i < cornerVertCount * 2; i++)
 			{
 				float angle = angleIncrement * i;
 
@@ -178,12 +179,7 @@ namespace Instrumental.Modeling.ProceduralGraphics
 
 			for (int i=0; i < widthVertCount; i++)
 			{
-				if (i == 0) vertices[baseID + i] = startEdge;
-				else if (i == widthVertCount - 1) vertices[baseID + i] = endEdge;
-				else
-				{
-					vertices[baseID + i] = Vector3.Lerp(startEdge, endEdge, i / widthVertCount);
-				}
+				vertices[baseID + i] = Vector3.Lerp(startEdge, endEdge, (float)i / widthVertCount);
 			}
 		}
 

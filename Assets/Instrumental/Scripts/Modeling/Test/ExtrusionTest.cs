@@ -24,6 +24,7 @@ namespace Instrumental.Modeling
 
 		[Range(2, 8)]
 		[SerializeField] int cornerVertCount = 4;
+		[Range(0, 8)]
 		[SerializeField] int widthVertCount = 4;
 		[Range(0, 0.1f)]
 		[SerializeField]
@@ -93,11 +94,13 @@ namespace Instrumental.Modeling
 
 		void LoopSide(int baseID, bool isLeft, float depth, float sideRadius)
 		{
-			float angleIncrement = 180 / ((cornerVertCount * 2));
+			float angleIncrement = 180f / (((float)cornerVertCount * 2f) - 1);
 
 			for (int i = 0; i < cornerVertCount * 2; i++)
 			{
 				float angle = angleIncrement * i;
+
+				//if (!evenNumber && i == middle) angle = 90f;
 
 				Vector3 vertex = Vector3.up * ((isLeft) ? sideRadius : -sideRadius);
 				vertex = Quaternion.AngleAxis(angle, Vector3.forward) * vertex;
@@ -123,21 +126,21 @@ namespace Instrumental.Modeling
 
 			for (int i = 0; i < widthVertCount; i++)
 			{
-				if (i == 0) vertices[baseID + i] = startEdge;
-				else if (i == widthVertCount - 1) vertices[baseID + i] = endEdge;
-				else
-				{
-					vertices[baseID + i] = Vector3.Lerp(startEdge, endEdge, i / widthVertCount);
-				}
+				vertices[baseID + i] = Vector3.Lerp(startEdge, endEdge, (float)i / widthVertCount);
 			}
 		}
 
 		void SetVertices()
 		{
-			LoopSide(frontLoop.VertexBaseID, true, 0, radius);
-			LoopEdge(frontLoop.VertexBaseID + cornerVertCount * 2, true, 0, radius);
-			LoopSide((frontLoop.VertexBaseID + cornerVertCount * 2) + widthVertCount, false, 0, radius);
-			LoopEdge((frontLoop.VertexBaseID + cornerVertCount * 4) + widthVertCount, false, 0, radius);
+			LoopSide(backLoop.VertexBaseID, true, 0, radius);
+			LoopEdge(backLoop.VertexBaseID + cornerVertCount * 2, true, 0, radius);
+			LoopSide((backLoop.VertexBaseID + cornerVertCount * 2) + widthVertCount, false, 0, radius);
+			LoopEdge((backLoop.VertexBaseID + cornerVertCount * 4) + widthVertCount, false, 0, radius);
+
+			LoopSide(frontLoop.VertexBaseID, true, extrusionDepth, radius);
+			LoopEdge(frontLoop.VertexBaseID + cornerVertCount * 2, true, extrusionDepth, radius);
+			LoopSide((frontLoop.VertexBaseID + cornerVertCount * 2) + widthVertCount, false, extrusionDepth, radius);
+			LoopEdge((frontLoop.VertexBaseID + cornerVertCount * 4) + widthVertCount, false, extrusionDepth, radius);
 		}
 
 		// Update is called once per frame
@@ -172,16 +175,16 @@ namespace Instrumental.Modeling
 			nextBisect = (drawSegmentID < bisectFirst) ? bisectFirst : bisectSecond;
 			// get our distance to the bisect. Subtraction
 			// then, apply that as an offset. Use mathf.repeat
-			int offset = nextBisect - (drawSegmentID);
-
+			int offset = nextBisect - (drawSegmentID + 2);
 			int adjacentSegment = nextBisect + offset;
-			int adjacentSegmentFistVert = 0;
-			int adjacentSegmentNextVert = 0;
-			GetVertsForSegment(segmentCount, adjacentSegment, out adjacentSegmentFistVert,
-				out adjacentSegmentNextVert);
 
-			int adjacentFirstVertBufferID = loop.GetBufferIndexForVertIndex(adjacentSegmentFistVert);
-			int adjacenetSecondVertBufferID = loop.GetBufferIndexForVertIndex(adjacentSegmentNextVert);
+			// ok so I think we can figure out if we've been processed already.
+			// segment ID above first bisect, less than first bisect * 2?
+			// segment ID above second bisect but below second bisect + bisectfirst?
+
+			bool inFirstRange = (drawSegmentID > bisectFirst - 2) && (drawSegmentID < (bisectFirst * 2) - 1);
+			bool inSecondRange = (drawSegmentID > (bisectFirst * 2) - 2 && (drawSegmentID < ((bisectFirst * 2) + bisectFirst)));
+			bool hasProcessedAlready = inFirstRange || inSecondRange;
 
 			for (int i = 0; i < segmentCount; i++)
 			{
@@ -195,6 +198,7 @@ namespace Instrumental.Modeling
 
 				Gizmos.color = (i == drawSegmentID) ? Color.blue : Color.green;
 				if (i == adjacentSegment) Gizmos.color = Color.yellow;
+				if (i == drawSegmentID && hasProcessedAlready) Gizmos.color = Color.red;
 				Gizmos.DrawLine(vertices[currentBufferID], vertices[nextBufferID]);
 			}
 		}
