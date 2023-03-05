@@ -26,6 +26,13 @@ namespace Instrumental.Modeling
 		{
 			return ((VertCount - 1) + ((IsClosed) ? 1 : 0));
 		}
+
+		public void GetVertsForSegment(int segment, out int first, out int second)
+		{
+			int segmentCount = GetSegmentCount();
+			first = segment;
+			second = (segmentCount - 1 == segment) ? 0 : segment + 1;
+		}
 	}
 
 	/// <summary>Describes a series of triangles that connect two edge loops.</summary>

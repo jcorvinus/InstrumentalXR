@@ -100,8 +100,6 @@ namespace Instrumental.Modeling
 			{
 				float angle = angleIncrement * i;
 
-				//if (!evenNumber && i == middle) angle = 90f;
-
 				Vector3 vertex = Vector3.up * ((isLeft) ? sideRadius : -sideRadius);
 				vertex = Quaternion.AngleAxis(angle, Vector3.forward) * vertex;
 				vertex += Vector3.right * (width * ((isLeft) ? -0.5f : 0.5f));
@@ -124,9 +122,17 @@ namespace Instrumental.Modeling
 			Vector3 startEdge = (isBottom) ? leftEdge : rightEdge;
 			Vector3 endEdge = (isBottom) ? rightEdge : leftEdge;
 
-			for (int i = 0; i < widthVertCount; i++)
+			// this hacky weird setup gives us even distribution of the allocated points, without doubling up
+			int iterator = 0;
+			int totalVertCount = widthVertCount + 2;
+			for (int i = 0; i < totalVertCount - 1; i++)
 			{
-				vertices[baseID + i] = Vector3.Lerp(startEdge, endEdge, (float)i / widthVertCount);
+				float tValue = Mathf.InverseLerp(0, totalVertCount - 1, i);
+				if (i > 0 && i < totalVertCount - 1)
+				{
+					vertices[baseID + iterator] = Vector3.Lerp(startEdge, endEdge, tValue);
+					iterator++;
+				}
 			}
 		}
 
@@ -147,12 +153,6 @@ namespace Instrumental.Modeling
 		void Update()
 		{
 
-		}
-
-		void GetVertsForSegment(int segmentCount, int currentSegment, out int first, out int second)
-		{
-			first = currentSegment;
-			second = (segmentCount - 1 == currentSegment) ? 0 : currentSegment + 1;
 		}
 
 		void DrawLoopWithSegment(EdgeLoop loop)
@@ -191,7 +191,7 @@ namespace Instrumental.Modeling
 				int currentVert = 0;
 				int nextVert = 0;
 
-				GetVertsForSegment(segmentCount, i, out currentVert, out nextVert);
+				loop.GetVertsForSegment(i, out currentVert, out nextVert);
 
 				int currentBufferID = loop.GetBufferIndexForVertIndex(currentVert);
 				int nextBufferID = loop.GetBufferIndexForVertIndex(nextVert);
