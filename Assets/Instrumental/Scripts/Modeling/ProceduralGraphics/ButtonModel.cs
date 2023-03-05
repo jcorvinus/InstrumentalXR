@@ -12,7 +12,7 @@ namespace Instrumental.Modeling.ProceduralGraphics
 		public delegate void ModelPropertiesHandler(ButtonModel sender);
 		public event ModelPropertiesHandler PropertiesChanged;
 
-		[Range(3, 12)]
+		[Range(2, 8)]
 		[SerializeField] int cornerVertCount = 4;
 
 		[SerializeField] int widthVertCount = 4;
@@ -145,38 +145,68 @@ namespace Instrumental.Modeling.ProceduralGraphics
 			_faceMesh.RecalculateNormals();*/
 		}
 
+		
+		void LoopSide(int baseID, bool isLeft, float depth, float sideRadius)
+		{
+			float angleIncrement = 180 / ((cornerVertCount * 2));
+
+			for(int i=0; i < cornerVertCount * 2; i++)
+			{
+				float angle = angleIncrement * i;
+
+				Vector3 vertex = Vector3.up * ((isLeft) ? sideRadius : -sideRadius);
+				vertex = Quaternion.AngleAxis(angle, Vector3.forward) * vertex;
+				vertex += Vector3.right * (width * ((isLeft) ? -0.5f : 0.5f));
+				vertex += Vector3.forward * depth;
+				vertices[baseID + i] = vertex;
+			}
+		}
+
+		void LoopEdge(int baseID, bool isBottom, float depth, float sideRadius)
+		{
+			Vector3 leftEdge, rightEdge;
+			leftEdge = Vector3.right * -(width * 0.5f); // we might also have to subtract the radius here? Not sure.
+			rightEdge = Vector3.right * (width * 0.5f);
+
+			leftEdge += Vector3.up * ((isBottom) ? -sideRadius : sideRadius);
+			rightEdge += Vector3.up * ((isBottom) ? -sideRadius : sideRadius);
+			leftEdge += Vector3.forward * depth;
+			rightEdge += Vector3.forward * depth;
+
+			Vector3 startEdge = (isBottom) ? leftEdge : rightEdge;
+			Vector3 endEdge = (isBottom) ? rightEdge : leftEdge;
+
+			for (int i=0; i < widthVertCount; i++)
+			{
+				if (i == 0) vertices[baseID + i] = startEdge;
+				else if (i == widthVertCount - 1) vertices[baseID + i] = endEdge;
+				else
+				{
+					vertices[baseID + i] = Vector3.Lerp(startEdge, endEdge, i / widthVertCount);
+				}
+			}
+		}
+
 		void SetVertices()
 		{
-			float angleIncrement = 360 / EdgeLoopVertCount;
-			float iterator = 0;
+			LoopSide(frontLoop.VertexBaseID, true, 0, radius);
+			LoopEdge(frontLoop.VertexBaseID + cornerVertCount * 2, true, 0, radius);
+			LoopSide((frontLoop.VertexBaseID + cornerVertCount * 2) + widthVertCount, false, 0, radius);
+			LoopEdge((frontLoop.VertexBaseID + cornerVertCount * 4) + widthVertCount, false, 0, radius);
 
-			for (int index = frontLoop.VertexBaseID; index < (frontLoop.VertexBaseID + frontLoop.VertCount);
-				index++)
-			{
-				float angle = angleIncrement * iterator;
-
-				Vector3 vertex = Vector3.up * radius;
-				vertex = Quaternion.AngleAxis(angle, Vector3.forward) * vertex;
-				vertices[index] = vertex;
-
-				iterator++;
-			}
-
-			iterator = 0;
-			for (int index = backLoop.VertexBaseID; index < (backLoop.VertexBaseID + frontLoop.VertCount);
-				index++)
-			{
-				float angle = angleIncrement * iterator;
-
-				Vector3 vertex = Vector3.up * radius;
-				vertex = Quaternion.AngleAxis(angle, Vector3.forward) * vertex;
-				vertex += (Vector3.forward * extrusionDepth);
-				vertices[index] = vertex;
-
-				iterator++;
-			}
+			// still doing the back edge loop the old way
+			float angleIncrement = 360 / (EdgeLoopVertCount); // - (widthVertCount * 2) // I think this can also be expressed as
+															  // cornerVertCount * 4;
+			int iterator = 0;
+			// ok it looks like the issue is that our loop side and loop edge don't allow for extrusion depth management
+			LoopSide(backLoop.VertexBaseID, true, extrusionDepth, radius);
+			LoopEdge(backLoop.VertexBaseID + cornerVertCount * 2, true, extrusionDepth, radius);
+			LoopSide((backLoop.VertexBaseID + cornerVertCount * 2) + widthVertCount, false, extrusionDepth, radius);
+			LoopEdge((backLoop.VertexBaseID + cornerVertCount * 4) + widthVertCount, false, extrusionDepth, radius);
 
 			// do our face bevel verts
+			/*float angleIncrement = 360 / (EdgeLoopVertCount);
+			int iterator = 0;*/
 			float extraExtrudeDepth = extrusionDepth * bevelExtrusionDepth;
 			float totalExtrudeDepth = extraExtrudeDepth;
 			float innerRadius = radius * bevelRadius;
@@ -189,8 +219,14 @@ namespace Instrumental.Modeling.ProceduralGraphics
 
 				float sliceRadius = MathSupplement.Sinerp(innerRadius, radius, 1 - depthTValue);
 				float sliceDepth = (i == bevelSliceCount -1) ? Mathf.Lerp(extrusionDepth, totalExtrudeDepth, ((1 - tValue) +  (1 - depthTValue)) * 0.5f) : Mathf.Lerp(extrusionDepth, totalExtrudeDepth, 1 - depthTValue);
+				sliceDepth *= -1;
 
-				iterator = 0;
+				LoopSide(startIndex, true, sliceDepth, sliceRadius);
+				LoopEdge(startIndex + cornerVertCount * 2, true, sliceDepth, sliceRadius);
+				LoopSide((startIndex + cornerVertCount * 2) + widthVertCount, false, sliceDepth, sliceRadius);
+				LoopEdge((startIndex + cornerVertCount * 4) + widthVertCount, false, sliceDepth, sliceRadius);
+
+				/*iterator = 0;
 				for (int index = startIndex; index < endIndex; index++)
 				{
 					float angle = angleIncrement * iterator;
@@ -202,7 +238,7 @@ namespace Instrumental.Modeling.ProceduralGraphics
 					vertices[index] = vertex;
 
 					iterator++;
-				}
+				}*/
 			}
 		}
 
