@@ -64,6 +64,8 @@ namespace Instrumental.Modeling
 		private void OnValidate()
 		{
 			GenerateMesh();
+
+			drawSegmentID = Mathf.Clamp(drawSegmentID, 0, frontLoop.GetSegmentCount() - 1);
 		}
 
 		private void OnEnable()
@@ -155,6 +157,9 @@ namespace Instrumental.Modeling
 
 		}
 
+		[SerializeField] int bisectFirstDisplay;
+		[SerializeField] int bisectSecondDisplay;
+
 		void DrawLoopWithSegment(EdgeLoop loop)
 		{
 			int segmentCount = loop.GetSegmentCount();
@@ -164,6 +169,9 @@ namespace Instrumental.Modeling
 
 			int bisectFirst = cornerVertCount;
 			int bisectSecond = (cornerVertCount * 3) + widthVertCount;
+
+			bisectFirstDisplay = bisectFirst;
+			bisectSecondDisplay = bisectSecond;
 
 			int bufferBisectFirst = loop.VertexBaseID + bisectFirst;
 			int bufferBisectSecond = loop.VertexBaseID + bisectSecond;
@@ -181,11 +189,22 @@ namespace Instrumental.Modeling
 			// ok so I think we can figure out if we've been processed already.
 			// segment ID above first bisect, less than first bisect * 2?
 			// segment ID above second bisect but below second bisect + bisectfirst?
+			bool isInFirstRange(int id)
+			{
+				return (id < bisectFirst - 1);
+			}
 
-			bool inFirstRange = (drawSegmentID > bisectFirst - 2) && (drawSegmentID < (bisectFirst * 2) - 1);
-			bool inSecondRange = (drawSegmentID > (bisectFirst * 2) - 2 && (drawSegmentID < ((bisectFirst * 2) + bisectFirst)));
-			bool hasProcessedAlready = inFirstRange || inSecondRange;
+			bool isInSecondRange(int id)
+			{
+				return (id > bisectSecond - 1);
+			}
 
+			bool inFirstRange = isInFirstRange(drawSegmentID);
+			bool inSecondRange = isInSecondRange(drawSegmentID);
+			bool hasProcessedAlready = !inFirstRange && !inSecondRange;
+
+			int predictedSegmentCount = ((cornerVertCount - 1) * 2) + (widthVertCount + 1);
+			int bridgableSegmentCount = 0;
 			for (int i = 0; i < segmentCount; i++)
 			{
 				int currentVert = 0;
@@ -200,7 +219,16 @@ namespace Instrumental.Modeling
 				if (i == adjacentSegment) Gizmos.color = Color.yellow;
 				if (i == drawSegmentID && hasProcessedAlready) Gizmos.color = Color.red;
 				Gizmos.DrawLine(vertices[currentBufferID], vertices[nextBufferID]);
+
+				bool bridgableInFirstRange = isInFirstRange(i);
+				bool bridgableInSecondRange = isInSecondRange(i);
+				bool bridgableHasProcessedAlready = !bridgableInFirstRange && !bridgableInSecondRange;
+
+				if (!bridgableHasProcessedAlready) bridgableSegmentCount++;
 			}
+
+			Debug.Log("Bridgable segment count: " + bridgableSegmentCount + " total: " + 
+				frontLoop.GetSegmentCount() + "Predicted: " + predictedSegmentCount);
 		}
 
 		private void OnDrawGizmosSelected()
