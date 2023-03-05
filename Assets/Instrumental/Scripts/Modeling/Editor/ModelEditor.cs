@@ -1,13 +1,7 @@
-﻿/*-----------------------------------------------------------
- * Lucidigital GeometryEditor
- * By JCorvinus
- * Currently unlicenced for any use.
- * ----------------------------------------------------------*/
-
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEditor;
 using System.Collections;
-using Lucidigital.Modeling;
+using Instrumental.Modeling;
 
 /// <summary>
 /// This class is an editor for our geometry objects. It allows simple model editing.
@@ -59,7 +53,7 @@ public class ModelEditor : Editor
 				{
 					Vector3 vertex = model.Vertices[i];
 
-					if (Handles.Button(model.transform.TransformPoint(vertex), Quaternion.identity, VertexTickSize, VertexTickSize, Handles.CubeCap))
+					if (Handles.Button(model.transform.TransformPoint(vertex), Quaternion.identity, VertexTickSize, VertexTickSize, Handles.CubeHandleCap))
 					{
 						selectedVertexID = i;
 						this.Repaint();
@@ -72,7 +66,7 @@ public class ModelEditor : Editor
 				{
 					Vector3 vertex = model.Vertices[i];
 
-					Handles.Button(vertex, Quaternion.identity, VertexTickSize, VertexTickSize, Handles.CubeCap);
+					Handles.Button(vertex, Quaternion.identity, VertexTickSize, VertexTickSize, Handles.CubeHandleCap);
 
 					if (i == selectedVertexID)
 					{
@@ -89,11 +83,11 @@ public class ModelEditor : Editor
 
 					if (i == selectedVertexID)
 					{
-						Handles.Button(model.transform.TransformPoint(currentVertex), Quaternion.identity, VertexTickSize, VertexTickSize * 2, Handles.SphereCap);
+						Handles.Button(model.transform.TransformPoint(currentVertex), Quaternion.identity, VertexTickSize, VertexTickSize * 2, Handles.SphereHandleCap);
 					}
 					else
 					{
-						if (Handles.Button(model.transform.TransformPoint(currentVertex), Quaternion.identity, VertexTickSize, VertexTickSize, Handles.CubeCap))
+						if (Handles.Button(model.transform.TransformPoint(currentVertex), Quaternion.identity, VertexTickSize, VertexTickSize, Handles.CubeHandleCap))
 						{
 							model.SetVertex(new Vector3((alignX) ? currentVertex.x : selectedVertex.x,
 								(alignY) ? currentVertex.y : selectedVertex.y,
@@ -171,7 +165,7 @@ public class ModelEditor : Editor
 			case FaceToolMode.Create:
 				for (int i = 0; i < model.Vertices.Count; i++)
 				{
-					if (Handles.Button(model.Vertices[i], Quaternion.identity, VertexTickSize, VertexTickSize, Handles.CubeCap))
+					if (Handles.Button(model.Vertices[i], Quaternion.identity, VertexTickSize, VertexTickSize, Handles.CubeHandleCap))
 					{
 						bool canAdd=true;
 						for (int checkIndx = 0; checkIndx < 3; checkIndx++)

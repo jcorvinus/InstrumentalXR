@@ -25,7 +25,7 @@ public class SplineEditor : Editor
 		{
 			Handles.color = (i == selectedKnot) ? Color.red : Color.blue;
 
-			if (Handles.Button(m_instance.Knots[i].transform.position, m_instance.transform.rotation, HandleScale, HandleScale, Handles.SphereCap))
+			if (Handles.Button(m_instance.Knots[i].transform.position, m_instance.transform.rotation, HandleScale, HandleScale, Handles.SphereHandleCap))
 			{
 				SelectIndex(i);
 				Repaint();
@@ -41,11 +41,11 @@ public class SplineEditor : Editor
 				{
 					m_instance.Knots[selectedKnot].LocalA = m_instance.Knots[selectedKnot].transform.InverseTransformPoint(Handles.PositionHandle(m_instance.Knots[selectedKnot].transform.TransformPoint(m_instance.Knots[selectedKnot].LocalA), m_instance.Knots[selectedKnot].transform.rotation));
 					Handles.DrawLine(m_instance.Knots[selectedKnot].transform.position, m_instance.Knots[selectedKnot].transform.TransformPoint(m_instance.Knots[selectedKnot].LocalA));
-					Handles.SphereCap(0, m_instance.Knots[selectedKnot].transform.TransformPoint(m_instance.Knots[selectedKnot].LocalA), Quaternion.identity, HandleScale);
+					Handles.SphereHandleCap(0, m_instance.Knots[selectedKnot].transform.TransformPoint(m_instance.Knots[selectedKnot].LocalA), Quaternion.identity, HandleScale, EventType.MouseDrag);
 
 					if (m_instance.Knots[selectedKnot].Type == SplineKnot.KnotType.Cubic)
 					{
-						Handles.SphereCap(0, m_instance.Knots[selectedKnot].transform.TransformPoint(m_instance.Knots[selectedKnot].LocalB), Quaternion.identity, HandleScale);
+						Handles.SphereHandleCap(0, m_instance.Knots[selectedKnot].transform.TransformPoint(m_instance.Knots[selectedKnot].LocalB), Quaternion.identity, HandleScale, EventType.MouseDrag);
 						Handles.DrawLine(m_instance.Knots[selectedKnot].transform.position, m_instance.Knots[selectedKnot].transform.TransformPoint(m_instance.Knots[selectedKnot].LocalB));
 						m_instance.Knots[selectedKnot].LocalB = m_instance.Knots[selectedKnot].transform.InverseTransformPoint(Handles.PositionHandle(m_instance.Knots[selectedKnot].transform.TransformPoint(m_instance.Knots[selectedKnot].LocalB), m_instance.Knots[selectedKnot].transform.rotation));
 					}

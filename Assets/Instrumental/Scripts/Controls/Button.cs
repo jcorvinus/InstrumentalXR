@@ -5,8 +5,6 @@ using UnityEngine;
 
 using Instrumental.Schema;
 
-using Leap.Unity.GraphicalRenderer;
-
 namespace Instrumental.Controls
 {
     public class Button : UIControl
@@ -17,11 +15,11 @@ namespace Instrumental.Controls
 		ButtonSchema buttonSchema;
 
 		// todo: handle all of our proc gen graphics and stuff
-		LeapMeshGraphic faceModel;
+		MeshRenderer faceModel;
 		MeshCollider faceModelCollider;
 		Mesh faceMesh;
 
-		LeapMeshGraphic rimModel;
+		MeshRenderer rimModel;
 		MeshCollider rimModelCollider;
 		Mesh rimMesh;
 
@@ -86,8 +84,8 @@ namespace Instrumental.Controls
             rimObject = transform.Find("Rim").gameObject;
 
 			// also get our graphics so we can do hover animations
-			faceModel = physicsObject.GetComponentInChildren<LeapMeshGraphic>();
-			rimModel = rimObject.GetComponent<LeapMeshGraphic>();
+			faceModel = physicsObject.GetComponentInChildren<MeshRenderer>();
+			rimModel = rimObject.GetComponent<MeshRenderer>();
 
 			faceModelCollider = faceModel.GetComponent<MeshCollider>();
 			rimModelCollider = rimModel.GetComponent<MeshCollider>();

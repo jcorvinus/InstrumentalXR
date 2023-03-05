@@ -1,13 +1,8 @@
-﻿/*-----------------------------------------------------------
- * Lucidigital Geometry
- * By JCorvinus
- * Currently unlicenced for any use.
- * ----------------------------------------------------------*/
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace Lucidigital.Modeling
+namespace Instrumental.Modeling
 {
 	/// <summary>
 	/// Lets us define verts, polys, matIDs and other things required to build a mesh.

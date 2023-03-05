@@ -4,9 +4,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-using Leap.Unity;
-using Leap.Unity.Interaction;
-
 namespace Instrumental.Controls
 {
     public enum ControlMode
@@ -38,8 +35,8 @@ namespace Instrumental.Controls
         private Panel attachedPanel; // this can be null, we don't have to be attached to a panel,
                                      // but it is significant if we are.
 
-        protected AnchorableBehaviour anchorable;
-        protected InteractionBehaviour placementInteraction;
+        /*protected AnchorableBehaviour anchorable;
+        protected InteractionBehaviour placementInteraction;*/
         private Rigidbody placementRigidbody;
         protected GameObject editSoundEmitterGameObject;
         protected AudioSource placementGrabSource;
@@ -56,8 +53,8 @@ namespace Instrumental.Controls
 
         protected virtual void Awake()
         {
-            anchorable = GetComponent<AnchorableBehaviour>();
-            placementInteraction = GetComponent<InteractionBehaviour>();
+            /*anchorable = GetComponent<AnchorableBehaviour>();
+            placementInteraction = GetComponent<InteractionBehaviour>();*/
             placementRigidbody = GetComponent<Rigidbody>();
             spaceChanger = GetComponent<Editing.SpaceChanger>();
 
@@ -72,9 +69,9 @@ namespace Instrumental.Controls
                     // if InteractionBehavior doesn't exist,
                     // create it. AnchorableBehavior not necessary?
                     // delete it if it exists?
-                    if (placementInteraction == null) placementInteraction = gameObject.AddComponent<InteractionBehaviour>();
+                    /*if (placementInteraction == null) placementInteraction = gameObject.AddComponent<InteractionBehaviour>();
                     placementInteraction.allowMultiGrasp = true;
-                    placementInteraction.graspedMovementType = InteractionBehaviour.GraspedMovementType.Kinematic;
+                    placementInteraction.graspedMovementType = InteractionBehaviour.GraspedMovementType.Kinematic;*/
 
                     // if we're in design mode or design palette mode,
                     // create our edit sound emitters
@@ -85,10 +82,10 @@ namespace Instrumental.Controls
                 case ControlMode.Design_Palette:
                     // if anchorable and InteractionBehavior don't exist,
                     // create them
-                    if(placementInteraction == null) placementInteraction = gameObject.AddComponent<InteractionBehaviour>();
+                    /*if(placementInteraction == null) placementInteraction = gameObject.AddComponent<InteractionBehaviour>();
                     if (anchorable == null) anchorable = gameObject.AddComponent<AnchorableBehaviour>();
                     placementInteraction.allowMultiGrasp = true;
-                    placementInteraction.graspedMovementType = InteractionBehaviour.GraspedMovementType.Nonkinematic;
+                    placementInteraction.graspedMovementType = InteractionBehaviour.GraspedMovementType.Nonkinematic;*/
 
                     // if we're in design mode or design palette mode,
                     // create our edit sound emitters
@@ -152,7 +149,7 @@ namespace Instrumental.Controls
                 placementGrabSource.minDistance = 0.1f;
                 placementGrabSource.maxDistance = 2f;
 
-                placementInteraction.OnGraspBegin += PlacementGraspBegin;
+                //placementInteraction.OnGraspBegin += PlacementGraspBegin;
             }
 
             if(placementDropSource)
@@ -167,29 +164,29 @@ namespace Instrumental.Controls
                 placementDropSource.maxDistance = 2f;
             }
 
-            if (placementInteraction)
+            /*if (placementInteraction)
             {
                 placementInteraction.allowMultiGrasp = true;
                 placementInteraction.OnGraspedMovement += DoEditorGraspMovement;
                 placementInteraction.OnGraspEnd += PlacementGraspEnd;
-            }
+            }*/
         }
 
         void PlacementGraspBegin()
         {
             placementGrabSource.Play();
-            if (placementInteraction.graspingControllers.Count > 1) isPrecisionPlacement = true;
+            //if (placementInteraction.graspingControllers.Count > 1) isPrecisionPlacement = true;
         }
 
         void PlacementGraspEnd()
         {
-            if (placementInteraction.graspingControllers.Count == 0)
+            /*if (placementInteraction.graspingControllers.Count == 0)
             {
                 if (attachedPanel) placementDropSource.Play();
 
                 isPrecisionPlacement = false;
                 placementInteraction.rigidbody.isKinematic = true;
-            }
+            }*/
 
             if(!isPrecisionPlacement)
             {
@@ -224,7 +221,7 @@ namespace Instrumental.Controls
             AngleSnap closestSnap = angleSnap.First(item => item.angleDist == angleSnap.Min(subItem => subItem.angleDist));
 
             //placementInteraction.rigidbody.MoveRotation(Quaternion.Slerp(placementRigidbody.rotation, closestSnap.orientation, Time.deltaTime * 6f));
-            placementInteraction.rigidbody.MoveRotation(closestSnap.orientation);
+            //placementInteraction.rigidbody.MoveRotation(closestSnap.orientation);
         }
 
         void SlerpAngleSnap()
@@ -243,12 +240,12 @@ namespace Instrumental.Controls
 
             AngleSnap closestSnap = angleSnap.First(item => item.angleDist == angleSnap.Min(subItem => subItem.angleDist));
 
-            placementInteraction.rigidbody.rotation = (Quaternion.Slerp(placementRigidbody.rotation, closestSnap.orientation, 0.5f));
+            //placementInteraction.rigidbody.rotation = (Quaternion.Slerp(placementRigidbody.rotation, closestSnap.orientation, 0.5f));
             //placementInteraction.rigidbody.MoveRotation(closestSnap.orientation);
         }
 
         void DoEditorGraspMovement(Vector3 preSolvedPos, Quaternion preSolvedRot,
-            Vector3 solvedPos, Quaternion solvedRot, List<InteractionController> graspingControllers)
+            Vector3 solvedPos, Quaternion solvedRot/*, List<InteractionController> graspingControllers*/)
         {
             if (attachedPanel != null)
             {

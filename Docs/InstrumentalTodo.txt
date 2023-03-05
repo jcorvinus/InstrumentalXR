@@ -44,6 +44,7 @@ Pull-out heirarchy:
 
 
 https://github.com/sigtrapgames/SmartData use this for letting users do data connections?
+In the intervening years since starting this project, I've learned that React has a nice pseudo-immediate mode system that people really like. Look into providing that here.
 
 Min and max dimensions:
 max: x: 0.9, y: 0.6
@@ -62,16 +63,8 @@ corner segment is cornerVertCount
 cornerVertCount-widthCount: upper
 widthCount-widthCount+cornerVertCount: upperRight
 
-Leap compatible punchkeyboard can be done with a 'put hands in zone to get beam-based pinch keyboard'
-
-
-use NVENC to record in obs
+New notes: It looks like I had not finished getting the button model rendering properly, and the legacy buttons were thrown together quickly to solve this.
 
 ------------------------------------
 Solving the 'tightly packed gizmos' issue:
 perhaps we can have a single ball-shaped gizmo that expands when hovered near, into a radial segment of other balls. The other balls can show axial constraints and names as you get closer to them. (Maybe we can do this craigslist-maps style, where the number of gizmos underneath can be a number inside of a ball)
-	
--------------------------
-Interaction Engine Requests:
-- Leap Spaces should have some kind of gizmo for moving and rotating. The spherical space should be capable of being inverted, and the cylindrical space should be capable of having its axis changed.
-- Leap Anchors don't properly handle curved spaces

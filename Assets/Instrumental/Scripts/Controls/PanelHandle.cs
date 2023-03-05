@@ -2,9 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-using Leap.Unity;
-using Leap.Unity.Interaction;
-
 namespace Instrumental.Controls
 {
     public class PanelHandle : MonoBehaviour
@@ -28,9 +25,9 @@ namespace Instrumental.Controls
 
         [SerializeField] HandleType type;         
         public HandleType Type { get { return type; } }
-        public bool IsGrasped { get { return interaction.isGrasped; } }
+        public bool IsGrasped { get { return false; /*return interaction.isGrasped;*/ } }
 
-        InteractionBehaviour interaction;
+        //InteractionBehaviour interaction;
         Collider[] colliders;
         Transform model;
         Panel owningPanel;
@@ -38,7 +35,7 @@ namespace Instrumental.Controls
 
         private void Awake()
         {
-            interaction = GetComponent<InteractionBehaviour>();
+            //interaction = GetComponent<InteractionBehaviour>();
             model = transform.GetChild(0);
             colliders = GetComponentsInChildren<Collider>();
         }
@@ -46,7 +43,7 @@ namespace Instrumental.Controls
         // Use this for initialization
         void Start()
         {
-            interaction.OnGraspBegin += () =>
+            /*interaction.OnGraspBegin += () =>
             {
                 if (OnHandleGrasped != null)
                 {
@@ -60,9 +57,9 @@ namespace Instrumental.Controls
                 {
                     OnhandleUngrasped(this);
                 }
-            };
+            };*/
 
-            interaction.OnGraspedMovement += OnGraspedMovement;
+            //interaction.OnGraspedMovement += OnGraspedMovement;
 
             startScale = model.transform.localScale;
         }
@@ -77,7 +74,7 @@ namespace Instrumental.Controls
         }
 
         void OnGraspedMovement(Vector3 preSolvedPos, Quaternion preSolvedRot,
-            Vector3 solvedPos, Quaternion solvedRot, List<InteractionController> graspingControllers)
+            Vector3 solvedPos, Quaternion solvedRot)
         {
             Vector3 constrainedLocalPosition = transform.parent.InverseTransformPoint(solvedPos);
             constrainedLocalPosition = new Vector3(constrainedLocalPosition.x, constrainedLocalPosition.y, 0);
@@ -123,8 +120,8 @@ namespace Instrumental.Controls
                     break;
             }
 
-            interaction.rigidbody.MovePosition(transform.parent.TransformPoint(constrainedLocalPosition));
-            interaction.rigidbody.MoveRotation(transform.parent.rotation);
+            /*interaction.rigidbody.MovePosition(transform.parent.TransformPoint(constrainedLocalPosition));
+            interaction.rigidbody.MoveRotation(transform.parent.rotation);*/
 
             owningPanel.SetDimensionsForPanel(this);
         }
@@ -137,7 +134,7 @@ namespace Instrumental.Controls
 
         public void SetGrabbable(bool grabbable)
         {
-            interaction.ignoreGrasping = !grabbable;
+            //interaction.ignoreGrasping = !grabbable;
             model.transform.localScale = (grabbable) ? startScale : startScale * 0.4f;
         }
     }

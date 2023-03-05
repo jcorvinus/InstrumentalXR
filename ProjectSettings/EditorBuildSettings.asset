@@ -6,5 +6,10 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Instrumental/Scenes/PanelEditor.unity
-    guid: e74c6accdb80e7742a44e05bab039cca
+    path: Assets/Instrumental/Scenes/BasicTest.unity
+    guid: 3d6b44aa413234047a37f65b719350fa
+  m_configObjects:
+    Unity.XR.OpenVR.Settings: {fileID: 11400000, guid: 228a473a23a2aa9409431d10194c14a2,
+      type: 2}
+    com.unity.xr.management.loader_settings: {fileID: 11400000, guid: 907595abdef93d040bfc50879241fe9b,
+      type: 2}

@@ -3,23 +3,20 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-using Leap.Unity.GraphicalRenderer;
-using Leap.Unity.Space;
 using Instrumental.Modeling.ProceduralGraphics;
 using Instrumental.Editing.Tools;
+using Instrumental.Space;
 
 namespace Instrumental.Controls
 {
     public class Panel : MonoBehaviour
     {
+        //LeapGraphicRenderer graphicRenderer;
+        SphericalSpace sphericalSpace;
+        CylindricalSpace cylindricalSpace;
 
-        LeapGraphicRenderer graphicRenderer;
-        LeapSphericalSpace sphericalSpace;
-        LeapCylindricalSpace cylindricalSpace;        
-
-        LeapBoxGraphic boxPanelGraphic;
-        LeapPanelGraphic panelGraphic;
-        LeapPanelOutlineGraphic panelOutlineGraphic;
+        // todo: implement the old box panel here maybe?
+        // todo: implement the old box panel outline here?
         FilletPanel filletPanel;
 
         BoxCollider rendererSpaceCollider;
@@ -35,8 +32,8 @@ namespace Instrumental.Controls
         public float Radius { get { return panelSchema.SpaceCurveRadius; } set
             {
                 panelSchema.SpaceCurveRadius = value;
-                if (cylindricalSpace) cylindricalSpace.radius = value;
-                if (sphericalSpace) sphericalSpace.radius = value;
+                if (cylindricalSpace) cylindricalSpace.Radius = value;
+                if (sphericalSpace) sphericalSpace.Radius = value;
             }
         }
 
@@ -65,9 +62,7 @@ namespace Instrumental.Controls
         private void Awake()
         {
             filletPanel = transform.GetChild(0).GetComponent<FilletPanel>();
-            boxPanelGraphic = transform.GetChild(1).GetComponent<LeapBoxGraphic>();
-            panelGraphic = transform.GetChild(2).GetComponent<LeapPanelGraphic>();
-            panelOutlineGraphic = transform.GetChild(3).GetComponent<LeapPanelOutlineGraphic>();
+            //panelGraphic = transform.GetChild(2).GetComponent<LeapPanelGraphic>();
             panelCollider = transform.GetChild(4).GetComponent<BoxCollider>();
             rendererSpaceCollider = GetComponent<BoxCollider>();
 
@@ -115,9 +110,9 @@ namespace Instrumental.Controls
                     break;
 
                 case Schema.PanelType.Fillet:
-                    boxPanelGraphic.gameObject.SetActive(false);
+                    /*boxPanelGraphic.gameObject.SetActive(false);
                     panelGraphic.gameObject.SetActive(false);
-                    panelOutlineGraphic.gameObject.SetActive(false);
+                    panelOutlineGraphic.gameObject.SetActive(false);*/
 
                     // set fillet values properly
                     filletPanel.SetDepth(panelSchema.Depth);
@@ -415,8 +410,8 @@ namespace Instrumental.Controls
 
             yield return new WaitForEndOfFrame();
 
-            if (cylindricalSpace == null) cylindricalSpace = gameObject.AddComponent<LeapCylindricalSpace>();
-            cylindricalSpace.radius = panelSchema.SpaceCurveRadius;
+            if (cylindricalSpace == null) cylindricalSpace = gameObject.AddComponent<CylindricalSpace>();
+            cylindricalSpace.Radius = panelSchema.SpaceCurveRadius;
 
             yield break;
         }
@@ -431,8 +426,8 @@ namespace Instrumental.Controls
 
             yield return new WaitForEndOfFrame();
 
-            if (sphericalSpace == null) sphericalSpace = gameObject.AddComponent<LeapSphericalSpace>();
-            sphericalSpace.radius = panelSchema.SpaceCurveRadius;
+            if (sphericalSpace == null) sphericalSpace = gameObject.AddComponent<SphericalSpace>();
+            sphericalSpace.Radius = panelSchema.SpaceCurveRadius;
 
             yield break;
         }

@@ -3,9 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-using Leap.Unity;
-using Leap.Unity.Interaction;
-
 namespace Instrumental.Editing.Tools
 {
     public class ColorDropper : MonoBehaviour
@@ -28,7 +25,7 @@ namespace Instrumental.Editing.Tools
 
         [SerializeField]
         MeshRenderer colorRenderer;
-        InteractionBehaviour interaction;
+        //InteractionBehaviour interaction;
 
         [SerializeField]
         MeshRenderer signifierRenderer;
@@ -45,8 +42,8 @@ namespace Instrumental.Editing.Tools
         [SerializeField]
         float pinchDeActivateDist = 0.04f;
 
-        PinchDetector leftPinch;
-        PinchDetector rightPinch;
+        /*PinchDetector leftPinch;
+        PinchDetector rightPinch;*/
 
         [Range(0, 0.2f)]
         [SerializeField]
@@ -74,14 +71,14 @@ namespace Instrumental.Editing.Tools
         float timeBetweenTipChecks = 0.11f;
         float checkTimer=0;
 
-        public bool IsGrasped { get { return interaction.isGrasped; } }
+        public bool IsGrasped { get { return false; /*return interaction.isGrasped;*/ } }
 
         private void Awake()
         {
             colorHash = Shader.PropertyToID("_Color");
             signifierTextureHash = Shader.PropertyToID("_MainTex");
 
-            interaction = GetComponent<InteractionBehaviour>();
+            /*interaction = GetComponent<InteractionBehaviour>();
 
             PinchDetector[] allPinchers = GetComponents<PinchDetector>();
 
@@ -90,7 +87,7 @@ namespace Instrumental.Editing.Tools
             leftPinch.DeactivateDistance = pinchDeActivateDist;
             rightPinch = allPinchers.First(item => item.HandModel.Handedness == Chirality.Right);
             rightPinch.ActivateDistance = pinchActivateDist;
-            rightPinch.DeactivateDistance = pinchDeActivateDist;
+            rightPinch.DeactivateDistance = pinchDeActivateDist;*/
         }
 
         // Use this for initialization
@@ -98,27 +95,29 @@ namespace Instrumental.Editing.Tools
         {
             colorRenderer.enabled = false;
 
-            leftPinch.OnActivate.AddListener(Use);
-            rightPinch.OnActivate.AddListener(Use);
+            /*leftPinch.OnActivate.AddListener(Use);
+            rightPinch.OnActivate.AddListener(Use);*/
         }
 
         bool EitherPinchValid()
         {
             Vector3 topPosition = GetTopPosition();
-            float leftDistance = Vector3.Distance(leftPinch.Position, topPosition);
-            float rightDistance = Vector3.Distance(rightPinch.Position, topPosition);
+            Vector3 leftPosition = Vector3.zero; // todo: replace these when upgrading to a new pinch button
+            Vector3 rightPosition = Vector3.zero;
+            float leftDistance = Vector3.Distance(leftPosition, topPosition);
+            float rightDistance = Vector3.Distance(rightPosition, topPosition);
 
             return leftDistance < pinchDeActivateDist || rightDistance < pinchDeActivateDist;
         }
 
-        PinchDetector ClosestPinch()
+        /*PinchDetector ClosestPinch()
         {
             Vector3 topPosition = GetTopPosition();
             float leftDistance = Vector3.Distance(leftPinch.Position, topPosition);
             float rightDistance = Vector3.Distance(rightPinch.Position, topPosition);
 
             return (leftDistance < rightDistance) ? leftPinch : rightPinch;
-        }
+        }*/
 
         Vector3 GetTopPosition()
         {
@@ -242,9 +241,10 @@ namespace Instrumental.Editing.Tools
 
             if (EitherPinchValid())
             {
-                PinchDetector closestPinch = ClosestPinch();
+                //PinchDetector closestPinch = ClosestPinch();
 
-                float distanceTValue = 1 - Mathf.InverseLerp(pinchActivateDist, pinchDeActivateDist * 1.5f, closestPinch.Distance);
+                //float distanceTValue = 1 - Mathf.InverseLerp(pinchActivateDist, pinchDeActivateDist * 1.5f, closestPinch.Distance);
+                float distanceTValue = 1;
                 topRenderer.SetBlendShapeWeight(0, distanceTValue * 100);
             }
             else

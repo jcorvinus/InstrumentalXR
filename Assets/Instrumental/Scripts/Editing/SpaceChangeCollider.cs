@@ -2,9 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-using Leap.Unity;
-using Leap.Unity.GraphicalRenderer;
-
 using Instrumental.Space;
 
 namespace Instrumental.Editing
@@ -24,12 +21,12 @@ namespace Instrumental.Editing
         {
             if (other.gameObject.layer == layerMask)
             {
-                LeapGraphicRenderer newRenderer = other.GetComponent<LeapGraphicRenderer>();
+                /*LeapGraphicRenderer newRenderer = other.GetComponent<LeapGraphicRenderer>();
 
                 if (newRenderer)
                 {
                     changer.ChangeSpaces(newRenderer);
-                }
+                }*/
             }
         }
 
@@ -37,7 +34,7 @@ namespace Instrumental.Editing
         {
             if (other.gameObject.layer == layerMask)
             {
-                LeapGraphicRenderer rendererCandidate = other.GetComponent<LeapGraphicRenderer>();
+                /*LeapGraphicRenderer rendererCandidate = other.GetComponent<LeapGraphicRenderer>();
 
                 if (rendererCandidate != null && rendererCandidate != GlobalSpace.Instance.GraphicRenderer)
                 {
@@ -53,7 +50,7 @@ namespace Instrumental.Editing
                     //    allGraphics[i].TryDetach();
                     //    group.TryAddGraphic(allGraphics[i]);
                     //}
-                }
+                }*/
             }
         }
     }

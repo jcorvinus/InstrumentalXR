@@ -3,8 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-using Leap.Unity;
-using Leap.Unity.GraphicalRenderer;
+/*using Leap.Unity;
+using Leap.Unity.GraphicalRenderer;*/
 
 using Instrumental.Space;
 
@@ -21,21 +21,21 @@ namespace Instrumental.Editing
             public int attachedGroupIndex;
         }
 
-        LeapGraphicRenderer currentRenderer;
-        LeapGraphic[] allGraphics;
+        /*LeapGraphicRenderer currentRenderer;
+        LeapGraphic[] allGraphics;*/
         GraphicInfo[] allGraphicsInfo;
 
         private void Awake()
         {
-            currentRenderer = GetComponentInParent<LeapGraphicRenderer>();
+            /*currentRenderer = GetComponentInParent<LeapGraphicRenderer>();
 
             allGraphics = GetComponentsInChildren<LeapGraphic>(true);
-            allGraphicsInfo = new GraphicInfo[allGraphics.Length];
+            allGraphicsInfo = new GraphicInfo[allGraphics.Length];*/
         }
 
         private void Start()
         {
-            LeapGraphicRenderer masterRenderer = GlobalSpace.Instance.GraphicRenderer;
+            /*LeapGraphicRenderer masterRenderer = GlobalSpace.Instance.GraphicRenderer;
             for (int i = 0; i < allGraphics.Length; i++)
             {
                 allGraphicsInfo[i] = new GraphicInfo()
@@ -43,10 +43,10 @@ namespace Instrumental.Editing
                     favoriteGroupName = allGraphics[i].favoriteGroupName,
                     attachedGroupIndex = masterRenderer.groups.FindIndex(item => item.name == allGraphics[i].favoriteGroupName)
                 };
-            }
+            }*/
         }
         
-        IEnumerator ChangeSpacesCoroutine(LeapGraphicRenderer newRenderer)
+        /*IEnumerator ChangeSpacesCoroutine(LeapGraphicRenderer newRenderer)
         {
             // remove all graphics
             for (int i = 0; i < allGraphics.Length; i++)
@@ -93,5 +93,6 @@ namespace Instrumental.Editing
 
             StartCoroutine(ChangeSpacesCoroutine(newRenderer));
         }
+        */
     }
 }

@@ -2,14 +2,15 @@
 A procedural UI toolkit &amp; spec for creating fully 3d, physics-based, instrument-panel style UI in XR
 
 #Installation instructions:
-- Clone the repo
-- Add [HandshakeVR](https://github.com/jcorvinus/HandshakeVR) to the project. This will get turned into a submodule, eventually.
-- If all of Handshake's dependencies were added correctly, you should be set up and ready to go.
+Don't. It's not ready yet. Right now I'm in the process of making a new version that doesn't rely on Ultraleap technology.
 
 ## This project is in pre-alpha and probably won't work for you. That's OK. Be patient.
 
 #License Information
 Instrumental incorporates the following licensed technology:
+
+##SteamVR Unity Plugin:
+https://github.com/ValveSoftware/steamvr_unity_plugin/blob/master/LICENSE
 
 ##Punchkeyboard
 The MIT License (MIT)
@@ -33,3 +34,10 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+##CatchCo Editor Extension 
+// The MIT License (MIT) - https://gist.github.com/bcatcho/1926794b7fd6491159e7
+// Copyright (c) 2015 Brandon Catcho
+
+## Everything else
+Wherever not otherwise listed, everything in here is MIT licensed by Joshua Corvinus. https://github.com/jcorvinus/InstrumentalXR/blob/master/LICENSE

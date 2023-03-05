@@ -2,16 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-using Leap.Unity;
-using Leap.Unity.Interaction;
-
 namespace Instrumental.Editing.Tools
 {
     public class ColorDropperPalette : MonoBehaviour
     {
         // components
         [SerializeField] ColorDropper dropper;
-        [SerializeField] InteractionSlider slider;
+        //[SerializeField] InteractionSlider slider;
         [SerializeField] Transform panel;
         Transform viewCamera;
 
@@ -35,7 +32,8 @@ namespace Instrumental.Editing.Tools
         private void Awake()
         {
             viewCamera = Camera.main.transform;
-            sliderDefaultScale = slider.transform.localScale;
+            //sliderDefaultScale = slider.transform.localScale;
+            sliderDefaultScale = Vector3.one;
             panel.gameObject.SetActive(false);
             panel.transform.localScale = new Vector3(0, 1, 1);
         }
@@ -60,14 +58,14 @@ namespace Instrumental.Editing.Tools
 
         void SetPanelScaleForSlider()
         {
-            panel.transform.localScale = new Vector3(1 - slider.HorizontalSliderPercent, 1, 1);
-            panel.gameObject.SetActive(slider.HorizontalSliderPercent < 0.99f);
+            /*panel.transform.localScale = new Vector3(1 - slider.HorizontalSliderPercent, 1, 1);
+            panel.gameObject.SetActive(slider.HorizontalSliderPercent < 0.99f);*/
         }
 
         // Update is called once per frame
         void Update()
         {
-            if(!isOpen) // we can only change enable or disable states while open
+            /*if(!isOpen) // we can only change enable or disable states while open
             {
                 isEnabled = dropper.IsGrasped;
 
@@ -137,7 +135,7 @@ namespace Instrumental.Editing.Tools
                         slider.HorizontalSliderPercent -= sliderReturnSpeed * Time.deltaTime;
                     }
                 }
-            }
+            }*/
         }
 
         private void OnDrawGizmos()
