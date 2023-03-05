@@ -9,6 +9,9 @@ namespace Instrumental.Modeling.ProceduralGraphics
 	[ExecuteInEditMode]
 	public class ButtonModel : MonoBehaviour
 	{
+		public delegate void ModelPropertiesHandler(ButtonModel sender);
+		public event ModelPropertiesHandler PropertiesChanged;
+
 		[Range(3, 12)]
 		[SerializeField] int cornerVertCount = 4;
 
@@ -25,7 +28,6 @@ namespace Instrumental.Modeling.ProceduralGraphics
 		[SerializeField]
 		float radius;
 
-		//[SerializeField]
 		bool closeLoop = true;
 
 		[Range(0,0.1f)]
@@ -40,9 +42,7 @@ namespace Instrumental.Modeling.ProceduralGraphics
 		[SerializeField]
 		float bevelExtrusionDepth;
 
-		MeshFilter meshFilter;
-		MeshRenderer meshRenderer;
-		Mesh _mesh;
+		Mesh _faceMesh;
 
 		EdgeLoop backLoop;
 		EdgeLoop frontLoop;
@@ -55,30 +55,24 @@ namespace Instrumental.Modeling.ProceduralGraphics
 
 		int EdgeLoopVertCount { get { return (cornerVertCount * 4) + (widthVertCount * 2); } }
 
+		public Mesh FaceMesh { get { return _faceMesh; } }
+
 		// debug stuff
 		[Header("Debug Variables")]
 		[SerializeField] bool drawLoops;
 		[SerializeField] bool drawMesh;
 		[SerializeField] bool regenerate;
 
-		private void Awake()
-		{
-			meshFilter = GetComponent<MeshFilter>();
-			meshRenderer = GetComponent<MeshRenderer>();
-		}
-
 		// Use this for initialization
 		void Start()
 		{
-			if (_mesh == null) _mesh = new Mesh();
-			_mesh.MarkDynamic();
-
-			meshFilter.mesh = _mesh;
+			GenerateMesh();
 		}
 
 		private void OnValidate()
 		{
 			GenerateMesh();
+			SetPropertiesChanged();
 		}
 
 		private void OnEnable()
@@ -86,8 +80,19 @@ namespace Instrumental.Modeling.ProceduralGraphics
 			GenerateMesh();
 		}
 
+		private void SetPropertiesChanged()
+		{
+			if (PropertiesChanged != null)
+			{
+				PropertiesChanged(this);
+			}
+		}
+
 		void GenerateMesh()
 		{
+			if (_faceMesh == null) _faceMesh = new Mesh();
+			_faceMesh.MarkDynamic();
+
 			int bridgeCount = 0;
 
 			int baseID = 0;
@@ -126,7 +131,7 @@ namespace Instrumental.Modeling.ProceduralGraphics
 				EdgeLoop secondLoop = faceBevelLoops[i];
 
 				faceBevelBridges[i] = ModelUtils.CreateExtrustion(ref triangleBaseID, firstLoop, secondLoop);
-				faceBevelBridges[i].TriangulateBridge(ref triangles, false);
+				faceBevelBridges[i].TriangulateBridge(ref triangles, true);
 
 				firstLoop = secondLoop;
 			}
@@ -134,6 +139,10 @@ namespace Instrumental.Modeling.ProceduralGraphics
 			// check to see if we're using our last bevel loop/bridge properly
 
 			// do a loop fill on the last loop to fill our face in.
+
+			/*_faceMesh.vertices = vertices;
+			_faceMesh.SetTriangles(triangles, 0);
+			_faceMesh.RecalculateNormals();*/
 		}
 
 		void SetVertices()
