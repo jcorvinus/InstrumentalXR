@@ -1,18 +1,18 @@
 # InstrumentalXR
 A procedural UI toolkit &amp; spec for creating fully 3d, physics-based, instrument-panel style UI in XR
 
-#Installation instructions:
+# Installation instructions:
 Don't. It's not ready yet. Right now I'm in the process of making a new version that doesn't rely on Ultraleap technology.
 
 ## This project is in pre-alpha and probably won't work for you. That's OK. Be patient.
 
-#License Information
+# License Information
 Instrumental incorporates the following licensed technology:
 
-##SteamVR Unity Plugin:
+## SteamVR Unity Plugin:
 https://github.com/ValveSoftware/steamvr_unity_plugin/blob/master/LICENSE
 
-##Punchkeyboard
+## Punchkeyboard
 The MIT License (MIT)
 
 Copyright (c) 2017 Jonathan Ravasz
@@ -35,7 +35,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
-##CatchCo Editor Extension 
+## CatchCo Editor Extension 
 // The MIT License (MIT) - https://gist.github.com/bcatcho/1926794b7fd6491159e7
 // Copyright (c) 2015 Brandon Catcho
 
