@@ -108,10 +108,10 @@ namespace Instrumental.Modeling
 			backFrontBridge.TriangulateBridge(ref triangles, true);
 			if (shouldFillFace) faceFill.TriangulateFace(ref triangles, false);
 
-			_mesh.vertices = vertices;
+			/*_mesh.vertices = vertices;
 			_mesh.triangles = triangles;
 			_mesh.RecalculateNormals();
-			meshFilter.sharedMesh = _mesh;
+			meshFilter.sharedMesh = _mesh;*/
 		}
 
 		void LoopSide(int baseID, bool isLeft, float depth, float sideRadius)

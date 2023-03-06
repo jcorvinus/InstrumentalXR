@@ -43,11 +43,14 @@ namespace Instrumental.Modeling.ProceduralGraphics
 		[SerializeField]
 		float bevelExtrusionDepth;
 
+		[SerializeField] bool applyMeshing = false;
+
 		Mesh _faceMesh;
 
 		EdgeLoop backLoop;
 		EdgeLoop frontLoop;
 		EdgeBridge backFrontBridge;
+		LinearEdgeLoopFaceFill faceFill;
 
 		EdgeLoop[] faceBevelLoops;
 		EdgeBridge[] faceBevelBridges;
@@ -120,30 +123,39 @@ namespace Instrumental.Modeling.ProceduralGraphics
 				frontLoop, backLoop);
 			bridgeCount++;
 
-			triangles = new int[backFrontBridge.GetTriangleIndexCount() * bridgeCount];
-			backFrontBridge.TriangulateBridge(ref triangles, false);
+			int bridgeTriangleIndexCount = backFrontBridge.GetTriangleIndexCount() * bridgeCount;
 
 			// do face bevel bridges
 			faceBevelBridges = new EdgeBridge[bridgeCount];
-
 			EdgeLoop firstLoop = frontLoop;
-			for(int i=0; i < bevelSliceCount; i++)
+			for (int i = 0; i < bevelSliceCount; i++)
 			{
 				EdgeLoop secondLoop = faceBevelLoops[i];
-
 				faceBevelBridges[i] = ModelUtils.CreateExtrustion(ref triangleBaseID, firstLoop, secondLoop);
-				faceBevelBridges[i].TriangulateBridge(ref triangles, true);
-
 				firstLoop = secondLoop;
 			}
 
-			// check to see if we're using our last bevel loop/bridge properly
+			faceFill = ModelUtils.CreateLinearFaceFill(ref triangleBaseID, faceBevelLoops[bevelSliceCount - 1],
+				cornerVertCount, widthVertCount);
 
-			// do a loop fill on the last loop to fill our face in.
+			int faceFillTriangleIndexCount = faceFill.GetTriangleIndexCount();
 
-			/*_faceMesh.vertices = vertices;
-			_faceMesh.SetTriangles(triangles, 0);
-			_faceMesh.RecalculateNormals();*/
+			// triangulate everything
+			triangles = new int[bridgeTriangleIndexCount + faceFillTriangleIndexCount];
+			backFrontBridge.TriangulateBridge(ref triangles, false);
+			for(int i=0; i < bevelSliceCount; i++)
+			{
+				faceBevelBridges[i].TriangulateBridge(ref triangles, true);
+			}
+
+			faceFill.TriangulateFace(ref triangles, true);
+
+			if (applyMeshing)
+			{
+				_faceMesh.vertices = vertices;
+				_faceMesh.SetTriangles(triangles, 0);
+				_faceMesh.RecalculateNormals();
+			}
 		}
 
 		
@@ -190,19 +202,12 @@ namespace Instrumental.Modeling.ProceduralGraphics
 			LoopSide((frontLoop.VertexBaseID + cornerVertCount * 2) + widthVertCount, false, 0, radius);
 			LoopEdge((frontLoop.VertexBaseID + cornerVertCount * 4) + widthVertCount, false, 0, radius);
 
-			// still doing the back edge loop the old way
-			float angleIncrement = 360 / (EdgeLoopVertCount); // - (widthVertCount * 2) // I think this can also be expressed as
-															  // cornerVertCount * 4;
-			int iterator = 0;
-			// ok it looks like the issue is that our loop side and loop edge don't allow for extrusion depth management
 			LoopSide(backLoop.VertexBaseID, true, extrusionDepth, radius);
 			LoopEdge(backLoop.VertexBaseID + cornerVertCount * 2, true, extrusionDepth, radius);
 			LoopSide((backLoop.VertexBaseID + cornerVertCount * 2) + widthVertCount, false, extrusionDepth, radius);
 			LoopEdge((backLoop.VertexBaseID + cornerVertCount * 4) + widthVertCount, false, extrusionDepth, radius);
 
 			// do our face bevel verts
-			/*float angleIncrement = 360 / (EdgeLoopVertCount);
-			int iterator = 0;*/
 			float extraExtrudeDepth = extrusionDepth * bevelExtrusionDepth;
 			float totalExtrudeDepth = extraExtrudeDepth;
 			float innerRadius = radius * bevelRadius;
@@ -211,7 +216,6 @@ namespace Instrumental.Modeling.ProceduralGraphics
 				float depthTValue = ((float)i + 1) / (float)bevelSliceCount; // precision loss is happening here.
 				float tValue = (float)i / (float)bevelSliceCount;
 				int startIndex = faceBevelLoops[i].VertexBaseID;
-				int endIndex = startIndex + faceBevelLoops[i].VertCount;
 
 				float sliceRadius = MathSupplement.Sinerp(innerRadius, radius, 1 - depthTValue);
 				float sliceDepth = (i == bevelSliceCount -1) ? Mathf.Lerp(extrusionDepth, totalExtrudeDepth, ((1 - tValue) +  (1 - depthTValue)) * 0.5f) : Mathf.Lerp(extrusionDepth, totalExtrudeDepth, 1 - depthTValue);
@@ -221,20 +225,6 @@ namespace Instrumental.Modeling.ProceduralGraphics
 				LoopEdge(startIndex + cornerVertCount * 2, true, sliceDepth, sliceRadius);
 				LoopSide((startIndex + cornerVertCount * 2) + widthVertCount, false, sliceDepth, sliceRadius);
 				LoopEdge((startIndex + cornerVertCount * 4) + widthVertCount, false, sliceDepth, sliceRadius);
-
-				/*iterator = 0;
-				for (int index = startIndex; index < endIndex; index++)
-				{
-					float angle = angleIncrement * iterator;
-
-					Vector3 vertex = Vector3.up * sliceRadius;
-					vertex = Quaternion.AngleAxis(angle, Vector3.forward) * vertex;
-					vertex -= (Vector3.forward * sliceDepth);
-
-					vertices[index] = vertex;
-
-					iterator++;
-				}*/
 			}
 		}
 
