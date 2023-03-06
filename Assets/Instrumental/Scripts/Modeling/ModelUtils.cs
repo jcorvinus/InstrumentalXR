@@ -98,6 +98,114 @@ namespace Instrumental.Modeling
 		}
 	}
 
+	/// <summary>
+	/// If you have a face-button like edge loop - as in a line with rounded caps,
+	/// this will fill the face in with the ideal topology.
+	/// </summary>
+	[System.Serializable]
+	public struct LinearEdgeLoopFaceFill
+	{
+		public EdgeLoop FaceLoop;
+		public int TriangleBaseID;
+		public int CornerVertCount;
+		public int WidthVertCount;
+
+		public bool IsValid()
+		{
+			return FaceLoop.GetSegmentCount() > 4 &&
+				FaceLoop.IsClosed; // there's probably more we can do to validate this,
+								   // like checking the linearity of points. Don't want to spend too many cycles on this though.
+		}
+
+		public int GetSegmentCount()
+		{
+			if (!IsValid()) return 0;
+
+			return (FaceLoop.GetSegmentCount() / 2) - 1;
+		}
+
+		public int GetTriangleCount()
+		{
+			return GetSegmentCount() * 2;
+		}
+
+		public int GetTriangleIndexCount()
+		{
+			return GetTriangleCount() * 3;
+		}
+
+		public void TriangulateFace(ref int[] triangles, bool flip)
+		{
+			int loopSegmentCount = FaceLoop.GetSegmentCount();
+
+			// find the index of our bisection plane
+			int bisectFirst = CornerVertCount;
+			int bisectSecond = (CornerVertCount * 3) + WidthVertCount;
+
+			int trackID = TriangleBaseID;
+			for(int i=0; i < loopSegmentCount; i++)
+			{
+				// calculate our next bisect plane, and get the offset
+				int nextBisect = 0;
+				nextBisect = (i < bisectFirst) ? bisectFirst : bisectSecond;
+				// get our distance to the bisect. Subtraction
+				// then, apply that as an offset. Use mathf.repeat
+				int offset = nextBisect - (i + 2);
+				int adjacentSegment = nextBisect + offset;
+
+				bool isInFirstRange(int id)
+				{
+					return (id < bisectFirst - 1);
+				}
+
+				bool isInSecondRange(int id)
+				{
+					return (id > bisectSecond - 1);
+				}
+
+				bool inFirstRange = isInFirstRange(i);
+				bool inSecondRange = isInSecondRange(i);
+				bool hasProcessedAlready = !inFirstRange && !inSecondRange;
+
+				if (hasProcessedAlready) continue;
+
+				// triangulate
+				int firstVert = 0;
+				int secondVert = 0;
+
+				FaceLoop.GetVertsForSegment(i, out firstVert, out secondVert);
+
+				int firstVertBufferID = FaceLoop.GetBufferIndexForVertIndex(firstVert);
+				int secondVertBufferID = FaceLoop.GetBufferIndexForVertIndex(secondVert);
+
+				int adjacentFirstVert=0;
+				int adjacentSecondVert=0;
+				FaceLoop.GetVertsForSegment(adjacentSegment, out adjacentFirstVert, out adjacentSecondVert);
+
+				int adjacentFirstVertBufferID = FaceLoop.GetBufferIndexForVertIndex(adjacentFirstVert);
+				int adjacentSecondVertBufferID = FaceLoop.GetBufferIndexForVertIndex(adjacentSecondVert);
+
+				int triA0 = firstVertBufferID;
+				int triA1 = secondVertBufferID;
+				int triA2 = adjacentFirstVertBufferID;
+
+				int triB0 = firstVertBufferID; 
+				int triB1 = adjacentFirstVertBufferID;
+				int triB2 = adjacentSecondVertBufferID; 
+
+				triangles[trackID] = (flip) ? triA2 : triA0;
+				triangles[trackID + 1] = triA1;
+				triangles[trackID + 2] = (flip) ? triA0 : triA2;
+
+				triangles[trackID + 3] = (flip) ? triB2 : triB0;
+				triangles[trackID + 4] = triB1;
+				triangles[trackID + 5] = (flip) ? triB0 : triB2;
+
+				trackID += 6;
+			}
+		}
+	}
+
 	public static class ModelUtils
 	{
 		// creation
@@ -127,6 +235,22 @@ namespace Instrumental.Modeling
 			baseID += bridge.GetTriangleIndexCount();
 
 			return bridge;
+		}
+
+		public static LinearEdgeLoopFaceFill CreateLinearFaceFill(ref int baseID,
+			EdgeLoop loop, int cornerVertCount, int widthVertCount)
+		{
+			LinearEdgeLoopFaceFill faceFill = new LinearEdgeLoopFaceFill()
+			{
+				FaceLoop = loop,
+				CornerVertCount = cornerVertCount,
+				WidthVertCount = widthVertCount,
+				TriangleBaseID = baseID
+			};
+
+			baseID += faceFill.GetTriangleIndexCount();
+
+			return faceFill;
 		}
 
 		// visualization

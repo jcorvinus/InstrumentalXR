@@ -22,6 +22,9 @@ namespace Instrumental.Modeling
 		[SerializeField]
 		bool closeLoop;
 
+		[SerializeField]
+		bool fillFace;
+
 		[Range(2, 8)]
 		[SerializeField] int cornerVertCount = 4;
 		[Range(0, 8)]
@@ -37,6 +40,7 @@ namespace Instrumental.Modeling
 		EdgeLoop backLoop;
 		EdgeLoop frontLoop;
 		EdgeBridge backFrontBridge;
+		LinearEdgeLoopFaceFill faceFill;
 		Vector3[] vertices;
 		int[] triangles;
 
@@ -87,11 +91,27 @@ namespace Instrumental.Modeling
 			SetVertices();
 
 			int triangleBaseID = 0;
+
 			backFrontBridge = ModelUtils.CreateExtrustion(ref triangleBaseID,
 				frontLoop, backLoop);
 
-			triangles = new int[backFrontBridge.GetTriangleIndexCount()];
-			backFrontBridge.TriangulateBridge(ref triangles, false);
+			bool shouldFillFace = closeLoop && fillFace;
+			if (shouldFillFace)
+			{
+				faceFill = ModelUtils.CreateLinearFaceFill(ref triangleBaseID,
+					frontLoop, cornerVertCount, widthVertCount);
+			}
+
+			int bridgeTriangleIndexCount = backFrontBridge.GetTriangleIndexCount();
+			int faceFillTriangleIndexCount = faceFill.GetTriangleIndexCount();
+			triangles = new int[bridgeTriangleIndexCount + faceFillTriangleIndexCount];
+			backFrontBridge.TriangulateBridge(ref triangles, true);
+			if (shouldFillFace) faceFill.TriangulateFace(ref triangles, false);
+
+			_mesh.vertices = vertices;
+			_mesh.triangles = triangles;
+			_mesh.RecalculateNormals();
+			meshFilter.sharedMesh = _mesh;
 		}
 
 		void LoopSide(int baseID, bool isLeft, float depth, float sideRadius)
@@ -157,21 +177,14 @@ namespace Instrumental.Modeling
 
 		}
 
-		[SerializeField] int bisectFirstDisplay;
-		[SerializeField] int bisectSecondDisplay;
-
 		void DrawLoopWithSegment(EdgeLoop loop)
 		{
-			int segmentCount = loop.GetSegmentCount();
+			int loopSegmentCount = loop.GetSegmentCount();
 
 			// need to find the index of our bisection plane
 			// first one is corner count, second one is cornercount * 3 + width count
-
 			int bisectFirst = cornerVertCount;
 			int bisectSecond = (cornerVertCount * 3) + widthVertCount;
-
-			bisectFirstDisplay = bisectFirst;
-			bisectSecondDisplay = bisectSecond;
 
 			int bufferBisectFirst = loop.VertexBaseID + bisectFirst;
 			int bufferBisectSecond = loop.VertexBaseID + bisectSecond;
@@ -203,9 +216,7 @@ namespace Instrumental.Modeling
 			bool inSecondRange = isInSecondRange(drawSegmentID);
 			bool hasProcessedAlready = !inFirstRange && !inSecondRange;
 
-			int predictedSegmentCount = ((cornerVertCount - 1) * 2) + (widthVertCount + 1);
-			int bridgableSegmentCount = 0;
-			for (int i = 0; i < segmentCount; i++)
+			for (int i = 0; i < loopSegmentCount; i++)
 			{
 				int currentVert = 0;
 				int nextVert = 0;
@@ -219,16 +230,7 @@ namespace Instrumental.Modeling
 				if (i == adjacentSegment) Gizmos.color = Color.yellow;
 				if (i == drawSegmentID && hasProcessedAlready) Gizmos.color = Color.red;
 				Gizmos.DrawLine(vertices[currentBufferID], vertices[nextBufferID]);
-
-				bool bridgableInFirstRange = isInFirstRange(i);
-				bool bridgableInSecondRange = isInSecondRange(i);
-				bool bridgableHasProcessedAlready = !bridgableInFirstRange && !bridgableInSecondRange;
-
-				if (!bridgableHasProcessedAlready) bridgableSegmentCount++;
 			}
-
-			Debug.Log("Bridgable segment count: " + bridgableSegmentCount + " total: " + 
-				frontLoop.GetSegmentCount() + "Predicted: " + predictedSegmentCount);
 		}
 
 		private void OnDrawGizmosSelected()
