@@ -63,6 +63,8 @@ corner segment is cornerVertCount
 cornerVertCount-widthCount: upper
 widthCount-widthCount+cornerVertCount: upperRight
 
+ok looks like I made a silly mistake - the face of the button is at 0 depth, and the back of the button gets pushed into the negative range. It might not be _that_ silly, there's possible logic to it, such as being able to check if the finger is touching by looking to see if the value is negative, but I think I want to fix that now.
+
 New notes: It looks like I had not finished getting the button model rendering properly, and the legacy buttons were thrown together quickly to solve this.
 
 ------------------------------------

@@ -7,8 +7,11 @@ namespace Instrumental.Modeling.ProceduralGraphics
     public class ButtonUnityGraphic : MonoBehaviour
     {
         ButtonModel faceButtonModel;
-        MeshFilter faceMeshFilter;
-        MeshRenderer faceMeshRenderer;
+        [SerializeField] MeshFilter faceMeshFilter;
+        [SerializeField] MeshRenderer faceMeshRenderer;
+
+        [SerializeField] MeshFilter rimMeshFilter;
+        [SerializeField] MeshRenderer rimMeshRenderer;
 
         [SerializeField] Material material;
 
@@ -39,6 +42,8 @@ namespace Instrumental.Modeling.ProceduralGraphics
             AcquireComponents();
             faceMeshFilter.sharedMesh = faceButtonModel.FaceMesh;
             faceMeshRenderer.material = material;
+            rimMeshFilter.sharedMesh = faceButtonModel.RimMesh;
+            rimMeshRenderer.material = material;
 		}
 
 		void OnValidate()

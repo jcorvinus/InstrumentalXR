@@ -44,6 +44,8 @@ namespace Instrumental.Modeling
 		Vector3[] vertices;
 		int[] triangles;
 
+		[SerializeField] bool applyMeshing = false;
+
 		// debug stuff
 		[Header("Debug Variables")]
 		[SerializeField] bool drawLoops;
@@ -108,10 +110,16 @@ namespace Instrumental.Modeling
 			backFrontBridge.TriangulateBridge(ref triangles, true);
 			if (shouldFillFace) faceFill.TriangulateFace(ref triangles, false);
 
-			/*_mesh.vertices = vertices;
-			_mesh.triangles = triangles;
-			_mesh.RecalculateNormals();
-			meshFilter.sharedMesh = _mesh;*/
+			if (applyMeshing)
+			{
+				if (_mesh == null) _mesh = new Mesh();
+				_mesh.MarkDynamic();
+
+				_mesh.vertices = vertices;
+				_mesh.triangles = triangles;
+				_mesh.RecalculateNormals();
+				meshFilter.sharedMesh = _mesh;
+			}
 		}
 
 		void LoopSide(int baseID, bool isLeft, float depth, float sideRadius)
