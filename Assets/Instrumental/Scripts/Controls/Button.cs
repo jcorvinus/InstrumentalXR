@@ -3,25 +3,17 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+using Instrumental.Modeling.ProceduralGraphics;
 using Instrumental.Schema;
 
 namespace Instrumental.Controls
 {
     public class Button : UIControl
     {
-        GameObject physicsObject;
-        GameObject rimObject;
-
 		ButtonSchema buttonSchema;
 
 		// todo: handle all of our proc gen graphics and stuff
-		MeshRenderer faceModel;
-		MeshCollider faceModelCollider;
-		Mesh faceMesh;
-
-		MeshRenderer rimModel;
-		MeshCollider rimModelCollider;
-		Mesh rimMesh;
+		ButtonUnityGraphic buttonGraphic;
 
 		// accessors for schema variables
 		public bool HasRim { get { return buttonSchema.HasRim; }
@@ -29,7 +21,7 @@ namespace Instrumental.Controls
 			{
 				if (HasRim != value) // don't do un-necessary work
 				{
-					buttonSchema.HasRim = value; rimObject.gameObject.SetActive(HasRim);
+					buttonSchema.HasRim = value;
 				}
 			}
 		}
@@ -79,22 +71,6 @@ namespace Instrumental.Controls
             _name = "Button";
 
             base.Awake();
-
-            physicsObject = transform.Find("Physics").gameObject;
-            rimObject = transform.Find("Rim").gameObject;
-
-			// also get our graphics so we can do hover animations
-			faceModel = physicsObject.GetComponentInChildren<MeshRenderer>();
-			rimModel = rimObject.GetComponent<MeshRenderer>();
-
-			faceModelCollider = faceModel.GetComponent<MeshCollider>();
-			rimModelCollider = rimModel.GetComponent<MeshCollider>();
-
-			faceMesh = new Mesh();
-			faceMesh.MarkDynamic();
-
-			rimMesh = new Mesh();
-			rimMesh.MarkDynamic();
         }
 
         protected override void Start()

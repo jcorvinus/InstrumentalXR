@@ -6,14 +6,17 @@ namespace Instrumental.Modeling.ProceduralGraphics
 {
     public class ButtonUnityGraphic : MonoBehaviour
     {
-        ButtonModel faceButtonModel;
-        [SerializeField] MeshFilter faceMeshFilter;
-        [SerializeField] MeshRenderer faceMeshRenderer;
+        ButtonModel buttonModel;
 
-        [SerializeField] MeshFilter rimMeshFilter;
-        [SerializeField] MeshRenderer rimMeshRenderer;
+        MeshFilter faceMeshFilter;
+        MeshRenderer faceMeshRenderer;
+        MeshFilter rimMeshFilter;
+        MeshRenderer rimMeshRenderer;
 
         [SerializeField] Material material;
+
+        public GameObject FaceObject { get { return faceMeshRenderer.gameObject; } }
+        public GameObject RimObject { get { return rimMeshRenderer.gameObject; } }
 
         bool hasComponents = false;
 
@@ -27,11 +30,13 @@ namespace Instrumental.Modeling.ProceduralGraphics
 		{
             if (!hasComponents)
             {
-                faceButtonModel = transform.GetChild(0).GetComponent<ButtonModel>();
-                faceMeshFilter = faceButtonModel.GetComponent<MeshFilter>();
-                faceMeshRenderer = faceButtonModel.GetComponent<MeshRenderer>();
+                buttonModel = GetComponent<ButtonModel>();
+                faceMeshFilter = transform.GetChild(0).GetComponent<MeshFilter>();
+                faceMeshRenderer = faceMeshFilter.GetComponent<MeshRenderer>();
+                rimMeshFilter = transform.GetChild(1).GetComponent<MeshFilter>();
+                rimMeshRenderer = rimMeshFilter.GetComponent<MeshRenderer>();
 
-                faceButtonModel.PropertiesChanged += (ButtonModel sender) => { Regenerate(); };
+                buttonModel.PropertiesChanged += (ButtonModel sender) => { Regenerate(); };
 
                 hasComponents = true;
             }
@@ -40,9 +45,9 @@ namespace Instrumental.Modeling.ProceduralGraphics
         void Regenerate()
 		{
             AcquireComponents();
-            faceMeshFilter.sharedMesh = faceButtonModel.FaceMesh;
+            faceMeshFilter.sharedMesh = buttonModel.FaceMesh;
             faceMeshRenderer.material = material;
-            rimMeshFilter.sharedMesh = faceButtonModel.RimMesh;
+            rimMeshFilter.sharedMesh = buttonModel.RimMesh;
             rimMeshRenderer.material = material;
 		}
 

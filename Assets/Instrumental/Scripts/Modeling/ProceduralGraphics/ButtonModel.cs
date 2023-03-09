@@ -4,8 +4,6 @@ using UnityEngine;
 
 namespace Instrumental.Modeling.ProceduralGraphics
 {
-	[RequireComponent(typeof(MeshFilter))]
-	[RequireComponent(typeof(MeshRenderer))]
 	[ExecuteInEditMode]
 	public class ButtonModel : MonoBehaviour
 	{
