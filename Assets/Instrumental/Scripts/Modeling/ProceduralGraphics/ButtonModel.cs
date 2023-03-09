@@ -161,13 +161,13 @@ namespace Instrumental.Modeling.ProceduralGraphics
 
 			// triangulate everything
 			faceTriangles = new int[bridgeTriangleIndexCount + faceFillTriangleIndexCount];
-			backFrontBridge.TriangulateBridge(ref faceTriangles, false);
+			backFrontBridge.TriangulateBridge(ref faceTriangles, true);
 			for (int i = 0; i < bevelSliceCount; i++)
 			{
-				faceBevelBridges[i].TriangulateBridge(ref faceTriangles, true);
+				faceBevelBridges[i].TriangulateBridge(ref faceTriangles, false);
 			}
 
-			faceFill.TriangulateFace(ref faceTriangles, true);
+			faceFill.TriangulateFace(ref faceTriangles, false);
 			_faceMesh.vertices = faceVertices;
 			_faceMesh.SetTriangles(faceTriangles, 0);
 			_faceMesh.RecalculateNormals();
@@ -265,19 +265,19 @@ namespace Instrumental.Modeling.ProceduralGraphics
 
 		void SetFaceVertices()
 		{
-			LoopSide(ref faceVertices, frontLoop.VertexBaseID, true, 0, radius);
-			LoopEdge(ref faceVertices, frontLoop.VertexBaseID + (cornerVertCount * 2), true, 0, radius);
-			LoopSide(ref faceVertices, (frontLoop.VertexBaseID + (cornerVertCount * 2)) + widthVertCount, false, 0, radius);
-			LoopEdge(ref faceVertices, (frontLoop.VertexBaseID + (cornerVertCount * 4)) + widthVertCount, false, 0, radius);
+			LoopSide(ref faceVertices, frontLoop.VertexBaseID, true, extrusionDepth, radius);
+			LoopEdge(ref faceVertices, frontLoop.VertexBaseID + (cornerVertCount * 2), true, extrusionDepth, radius);
+			LoopSide(ref faceVertices, (frontLoop.VertexBaseID + (cornerVertCount * 2)) + widthVertCount, false, extrusionDepth, radius);
+			LoopEdge(ref faceVertices, (frontLoop.VertexBaseID + (cornerVertCount * 4)) + widthVertCount, false, extrusionDepth, radius);
 
-			LoopSide(ref faceVertices, backLoop.VertexBaseID, true, extrusionDepth, radius);
-			LoopEdge(ref faceVertices, backLoop.VertexBaseID + (cornerVertCount * 2), true, extrusionDepth, radius);
-			LoopSide(ref faceVertices, (backLoop.VertexBaseID + (cornerVertCount * 2)) + widthVertCount, false, extrusionDepth, radius);
-			LoopEdge(ref faceVertices, (backLoop.VertexBaseID + (cornerVertCount * 4)) + widthVertCount, false, extrusionDepth, radius);
+			LoopSide(ref faceVertices, backLoop.VertexBaseID, true, 0, radius);
+			LoopEdge(ref faceVertices, backLoop.VertexBaseID + (cornerVertCount * 2), true, 0, radius);
+			LoopSide(ref faceVertices, (backLoop.VertexBaseID + (cornerVertCount * 2)) + widthVertCount, false, 0, radius);
+			LoopEdge(ref faceVertices, (backLoop.VertexBaseID + (cornerVertCount * 4)) + widthVertCount, false, 0, radius);
 
 			// do our face bevel verts
 			float extraExtrudeDepth = extrusionDepth * bevelExtrusionDepth;
-			float totalExtrudeDepth = extraExtrudeDepth;
+			float totalExtrudeDepth = extrusionDepth + extraExtrudeDepth;
 			float innerRadius = radius * bevelRadius;
 			for(int i=0; i < bevelSliceCount; i++)
 			{
@@ -286,8 +286,7 @@ namespace Instrumental.Modeling.ProceduralGraphics
 				int startIndex = faceBevelLoops[i].VertexBaseID;
 
 				float sliceRadius = MathSupplement.Sinerp(innerRadius, radius, 1 - depthTValue);
-				float sliceDepth = (i == bevelSliceCount -1) ? Mathf.Lerp(extrusionDepth, totalExtrudeDepth, ((1 - tValue) +  (1 - depthTValue)) * 0.5f) : Mathf.Lerp(extrusionDepth, totalExtrudeDepth, 1 - depthTValue);
-				sliceDepth *= -1;
+				float sliceDepth = (i == bevelSliceCount -1) ? Mathf.Lerp(extrusionDepth, totalExtrudeDepth, ((tValue) +  (depthTValue)) * 0.5f) : Mathf.Lerp(extrusionDepth, totalExtrudeDepth, depthTValue);
 
 				LoopSide(ref faceVertices, startIndex, true, sliceDepth, sliceRadius);
 				LoopEdge(ref faceVertices, startIndex + (cornerVertCount * 2), true, sliceDepth, sliceRadius);
