@@ -86,7 +86,7 @@ namespace Instrumental.Modeling.ProceduralGraphics
         [SerializeField]
         float radius;
 
-        [Range(2, 8)]
+        [Range(MIN_FILLET_SEGMENTS, MAX_FILLET_SEGMENTS)]
         [SerializeField]
         int filletSegments;
 
@@ -115,11 +115,11 @@ namespace Instrumental.Modeling.ProceduralGraphics
         [SerializeField]
         BorderType border = BorderType.None;
 
-        [Range(0.1f, 0.5f)]
+        [Range(MIN_INSET_PERCENT, MAX_INSET_PERCENT)]
         [SerializeField]
         float borderInsetPercent = 0.1f;
 
-        [Range(1, 4)]
+        [Range(MIN_BORDER_SEGMENTS, MAX_BORDER_SEGMENTS)]
         [SerializeField]
         int borderSegments = 1;
 

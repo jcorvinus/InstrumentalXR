@@ -10,20 +10,47 @@ namespace Instrumental.Modeling.ProceduralGraphics
 		public delegate void ModelPropertiesHandler(ButtonModel sender);
 		public event ModelPropertiesHandler PropertiesChanged;
 
-		[Range(2, 8)]
+		public const int MIN_CORNER_VERT_COUNT = 2;
+		public const int MAX_CORNER_VERT_COUNT = 8;
+
+		public const int MIN_WIDTH_VERT_COUNT = 0;
+		public const int MAX_WIDTH_VERT_COUNT = 8;
+
+		public const int MIN_BEVEL_SLICE_COUNT = 0;
+		public const int MAX_BEVEL_SLICE_COUNT = 3;
+
+		public const float MIN_EXTRUSION_DEPTH = 0;
+		public const float MAX_EXTRUSION_DEPTH = 1;
+
+		public const float MIN_RADIUS = 0;
+		public const float MAX_RADIUS = 1;
+
+		public const float MIN_BEVEL_RADIUS_PERCENT = 0;
+		public const float MAX_BEVEL_RADIUS_PERCENT = 1;
+
+		public const float MIN_BEVEL_EXTRUSION_PERCENT = 0;
+		public const float MAX_BEVEL_EXTRUSION_PERCENT = 1;
+
+		public const float MIN_RIM_WIDTH_PERCENT = 0;
+		public const float MAX_RIM_WIDTH_PERCENT = 1;
+
+		public const float MIN_RIM_DEPTH_PERCENT = 0;
+		public const float MAX_RIM_DEPTH_PERCENT = 1;
+
+		[Range(MIN_CORNER_VERT_COUNT, MAX_CORNER_VERT_COUNT)]
 		[SerializeField] int cornerVertCount = 4;
 
-		[Range(0, 8)]
+		[Range(MIN_WIDTH_VERT_COUNT, MAX_WIDTH_VERT_COUNT)]
 		[SerializeField] int widthVertCount = 4;
 
-		[Range(0, 3)]
+		[Range(MIN_BEVEL_SLICE_COUNT, MAX_BEVEL_SLICE_COUNT)]
 		[SerializeField] int bevelSliceCount = 1;
 
-		[Range(0, 1)]
+		[Range(MIN_EXTRUSION_DEPTH, MAX_EXTRUSION_DEPTH)]
 		[SerializeField]
 		float extrusionDepth;
 
-		[Range(0, 1)]
+		[Range(MIN_RADIUS, MAX_RADIUS)]
 		[SerializeField]
 		float radius;
 
@@ -33,19 +60,19 @@ namespace Instrumental.Modeling.ProceduralGraphics
 		[SerializeField]
 		float width;
 
-		[Range(0, 1)]
+		[Range(MIN_BEVEL_RADIUS_PERCENT, MAX_BEVEL_RADIUS_PERCENT)]
 		[SerializeField]
 		float bevelRadius;
 
-		[Range(0, 1)]
+		[Range(MIN_BEVEL_EXTRUSION_PERCENT, MAX_BEVEL_EXTRUSION_PERCENT)]
 		[SerializeField]
 		float bevelExtrusionDepth;
 
-		[Range(0, 1)]
+		[Range(MIN_RIM_WIDTH_PERCENT, MAX_RIM_WIDTH_PERCENT)]
 		[SerializeField]
 		float rimWidthPercentage = 1;
 
-		[Range(0, 1)]
+		[Range(MIN_RIM_DEPTH_PERCENT, MAX_RIM_DEPTH_PERCENT)]
 		[SerializeField]
 		float rimDepthPercentage = 0.5f;
 

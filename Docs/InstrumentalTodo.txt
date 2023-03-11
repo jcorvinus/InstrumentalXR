@@ -109,6 +109,10 @@ Interesting that uischema would have the ability to hold controls with no panel.
 
 I'm looking at UICommonElements, which is where we'd normally store all of our prefabs for spawning. There does seem to be one problem though: unity serialization doesn't like dictionaries. We can probably just turn this into an array and call it a day nbd.
 
+Hmm. Need to think about the collider situation. For perfectly round buttons it's fine to have a capsule collider as the trigger region, but as soon as the button can go wide, no such collider is acceptable. I suppose it'd be possible to have 3 colliders, 2 capsules and a connecting box but that feels weird - we'd have to write pretty hacky 'in region' code. I suppose we could do a convex mesh collider but eh, performance and runtime updating. Don't like it. We'd also be giving up our ability to start the hover on trigger enter. Guess I'll just do box colliders for both.
+
+Looking at the buttonmodel class, we'll need to supply accessors so that the owning class (button) can send it proper updates based off of schema data. Oh hmm it looks like methods are used instead of accessor fields. Not a huge difference tbh. Interesting though that we provide const float constraints. One thing that does kind of suck though is that in the editor for design at least, it's a good idea to be able to have something where we can set sliders and have them automatically update the visual representation. Maybe this means writing a custom editor for the schema itself, although our lack of inheritance means we can't exactly expose all the right options. We'll also need to start looking into instancing here
+
 ------------------------------------
 Solving the 'tightly packed gizmos' issue:
 perhaps we can have a single ball-shaped gizmo that expands when hovered near, into a radial segment of other balls. The other balls can show axial constraints and names as you get closer to them. (Maybe we can do this craigslist-maps style, where the number of gizmos underneath can be a number inside of a ball)
