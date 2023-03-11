@@ -16,7 +16,7 @@ MonoBehaviour:
   PromptToUpgradePreviewPackages: 1
   SkipPromptForVersion: 
   StereoRenderingMode: 0
-  InitializationType: 2
+  InitializationType: 1
   EditorAppKey: application.generated.unity.instrumental.exe
   ActionManifestFileRelativeFilePath: StreamingAssets\SteamVR\actions.json
   MirrorView: 0

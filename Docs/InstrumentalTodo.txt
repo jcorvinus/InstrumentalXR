@@ -67,6 +67,31 @@ ok looks like I made a silly mistake - the face of the button is at 0 depth, and
 
 New notes: It looks like I had not finished getting the button model rendering properly, and the legacy buttons were thrown together quickly to solve this.
 
+-----------------------------------
+Graphics stuff:
+I need to figure out the best way to handle vertex colors and coloration. I want to be able to quickly change colors of certain elements every frame (such as button faces), but doing that per-vertex might be a bad idea. I was thinking we could possibly put the shading value into the vertex colors, and then use a palette system for coloring things dynamically like the hover and touch.
+
+It does look like I can use a similar palette system to the one I'm familiar with. There doesn't seem to be anything in the schema right now for color definitions, so I've got a blank slate to play with there. Ugh the theming is a lot to think about and I kinda don't wanna lol I need to start moving faster too. Hmm. It does look like on the fillet panel at least, we generate the vcolors on generate mesh, and don't modify them during setvertices
+
+Let's provide base colors in the vertex colors. We can have shader common values for:
+- Touch Start
+- Touch complete
+- Hover (far - interaction point is outside of the bounds but nearby)
+- Hover (near - interaction point is inside of the bounds)
+- Press
+- Grasp
+
+Global shader values for:
+- interaction positions (left/right)
+
+Material property block data for:
+- Touch Amount
+- IsPressing
+- IsGrasping
+
+- Also the ability to do cubemaps for shiny stuff
+
+
 ------------------------------------
 Solving the 'tightly packed gizmos' issue:
 perhaps we can have a single ball-shaped gizmo that expands when hovered near, into a radial segment of other balls. The other balls can show axial constraints and names as you get closer to them. (Maybe we can do this craigslist-maps style, where the number of gizmos underneath can be a number inside of a ball)

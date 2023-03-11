@@ -50,6 +50,16 @@ namespace Instrumental.Modeling.ProceduralGraphics
 		float rimDepthPercentage = 0.5f;
 
 		#region Face Mesh Stuff
+		[Header("Face Color")]
+		[SerializeField]
+		ColorType faceColorType = ColorType.FlatColor;
+		[SerializeField]
+		Gradient faceGradient;
+		[SerializeField]
+		GradientInfo faceGradientInfo;
+		[SerializeField]
+		Color faceColor = Color.white;
+
 		Mesh _faceMesh;
 		EdgeLoop backLoop;
 		EdgeLoop frontLoop;
@@ -60,12 +70,22 @@ namespace Instrumental.Modeling.ProceduralGraphics
 		EdgeBridge[] faceBevelBridges;
 		Vector3[] faceVertices;
 		int[] faceTriangles;
+		Color[] faceColors;
 
 		public Mesh FaceMesh { get { return _faceMesh; } }
-		public Mesh RimMesh { get { return _rimMesh; } }
 		#endregion
 
 		#region Rim Mesh Stuff
+		[Header("Rim Color")]
+		[SerializeField]
+		ColorType rimColorType = ColorType.FlatColor;
+		[SerializeField]
+		Gradient rimGradient;
+		[SerializeField]
+		GradientInfo rimGradientInfo;
+		[SerializeField]
+		Color rimColor = Color.white;
+
 		Mesh _rimMesh;
 		EdgeLoop rimOuterLoopBack, rimOuterLoopFront;
 		EdgeLoop rimInnerLoopBack, rimInnerLoopFront;
@@ -74,6 +94,9 @@ namespace Instrumental.Modeling.ProceduralGraphics
 		EdgeBridge rimInnerBridge;
 		Vector3[] rimVertices;
 		int[] rimTriangles;
+		Color[] rimColors;
+
+		public Mesh RimMesh { get { return _rimMesh; } }
 		#endregion
 
 		int EdgeLoopVertCount { get { return (cornerVertCount * 4) + (widthVertCount * 2); } }
@@ -135,6 +158,8 @@ namespace Instrumental.Modeling.ProceduralGraphics
 
 			SetFaceVertices();
 
+			GenerateFaceColors(out faceColors);
+
 			int triangleBaseID = 0;
 			backFrontBridge = ModelUtils.CreateExtrustion(ref triangleBaseID,
 				frontLoop, backLoop);
@@ -168,9 +193,50 @@ namespace Instrumental.Modeling.ProceduralGraphics
 			faceFill.TriangulateFace(ref faceTriangles, false);
 			_faceMesh.vertices = faceVertices;
 			_faceMesh.SetTriangles(faceTriangles, 0);
+			_faceMesh.colors = faceColors;
 			_faceMesh.RecalculateNormals();
 		}
 
+		void GenerateFaceColors(out Color[] vertexColors)
+		{
+			vertexColors = new Color[faceVertices.Length];
+
+			for(int i=0; i < vertexColors.Length; i++)
+			{
+				switch (faceColorType)
+				{
+					case ColorType.FlatColor:
+						vertexColors[i] = faceColor;
+						break;
+					case ColorType.Gradient:
+						vertexColors[i] = faceColor; // todo: replace this with a radial gradient
+						break;
+					default:
+						break;
+				}
+			}
+		}
+
+
+		void GenerateRimColors(out Color[] vertexColors)
+		{
+			vertexColors = new Color[rimVertices.Length];
+			
+			for(int i=0; i < vertexColors.Length; i++)
+			{
+				switch (faceColorType)
+				{
+					case ColorType.FlatColor:
+						vertexColors[i] = rimColor;
+						break;
+					case ColorType.Gradient:
+						vertexColors[i] = rimColor; // todo: replace this with a linear depth gradient
+						break;
+					default:
+						break;
+				}
+			}
+		}
 		void GenerateRimMesh()
 		{
 			if (_rimMesh == null) _rimMesh = new Mesh();
@@ -199,6 +265,7 @@ namespace Instrumental.Modeling.ProceduralGraphics
 				rimInnerLoopFront);
 
 			SetRimVertices();
+			GenerateRimColors(out rimColors);
 
 			int triangleIndexCount = rimOuterBridge.GetTriangleIndexCount() +
 				rimOuterInnerBridge.GetTriangleIndexCount() +
@@ -211,6 +278,7 @@ namespace Instrumental.Modeling.ProceduralGraphics
 			rimInnerBridge.TriangulateBridge(ref rimTriangles, false);
 			_rimMesh.vertices = rimVertices;
 			_rimMesh.triangles = rimTriangles;
+			_rimMesh.colors = rimColors;
 			_rimMesh.RecalculateNormals();
 		}
 
