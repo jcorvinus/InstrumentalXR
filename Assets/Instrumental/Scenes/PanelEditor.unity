@@ -185,7 +185,7 @@ MonoBehaviour:
     _f: []
     _g: []
     _h: []
-  _attachedRenderer: {fileID: 1842234892}
+  _attachedRenderer: {fileID: 0}
   _attachedGroupIndex: 1
   _favoriteGroupName: Images
   _preferredRendererType:
@@ -764,7 +764,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 8eca0b31e096dbb4e9ec168e385043a9, type: 2}
+  - {fileID: 2100000, guid: dc850d14b063bf04f847e9f38a02d684, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1817,7 +1817,7 @@ MonoBehaviour:
     _f: []
     _g: []
     _h: []
-  _attachedRenderer: {fileID: 1842234892}
+  _attachedRenderer: {fileID: 0}
   _attachedGroupIndex: 0
   _favoriteGroupName: Controls
   _preferredRendererType:
@@ -1851,7 +1851,7 @@ MonoBehaviour:
     _f: []
     _g: []
     _h: []
-  _attachedRenderer: {fileID: 1842234892}
+  _attachedRenderer: {fileID: 0}
   _attachedGroupIndex: 0
   _favoriteGroupName: Controls
   _preferredRendererType:
@@ -2355,6 +2355,103 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 10.909, y: -15.004, z: -90.00001}
+--- !u!1 &409764827
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 409764831}
+  - component: {fileID: 409764830}
+  - component: {fileID: 409764829}
+  - component: {fileID: 409764828}
+  m_Layer: 0
+  m_Name: Floor
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!65 &409764828
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 409764827}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1, z: 0.5}
+  m_Center: {x: 0, y: 0, z: 0.25}
+--- !u!23 &409764829
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 409764827}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: edfa7efdb7d83da439c6029b133fed32, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!33 &409764830
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 409764827}
+  m_Mesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!4 &409764831
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 409764827}
+  m_LocalRotation: {x: 0.70710576, y: -0, z: -0, w: 0.70710784}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 6.0647, y: 6.0647, z: 6.0647}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 9
+  m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
 --- !u!1 &445279339
 GameObject:
   m_ObjectHideFlags: 0
@@ -3113,7 +3210,7 @@ MonoBehaviour:
     _f: []
     _g: []
     _h: []
-  _attachedRenderer: {fileID: 1842234892}
+  _attachedRenderer: {fileID: 0}
   _attachedGroupIndex: 1
   _favoriteGroupName: Images
   _preferredRendererType:
@@ -3811,7 +3908,7 @@ MonoBehaviour:
     _f: []
     _g: []
     _h: []
-  _attachedRenderer: {fileID: 1842234892}
+  _attachedRenderer: {fileID: 0}
   _attachedGroupIndex: 0
   _favoriteGroupName: Controls
   _preferredRendererType:
@@ -3845,7 +3942,7 @@ MonoBehaviour:
     _f: []
     _g: []
     _h: []
-  _attachedRenderer: {fileID: 1842234892}
+  _attachedRenderer: {fileID: 0}
   _attachedGroupIndex: 0
   _favoriteGroupName: Controls
   _preferredRendererType:
@@ -4038,7 +4135,7 @@ MonoBehaviour:
     _f: []
     _g: []
     _h: []
-  _attachedRenderer: {fileID: 1842234892}
+  _attachedRenderer: {fileID: 0}
   _attachedGroupIndex: 1
   _favoriteGroupName: Images
   _preferredRendererType:
@@ -4320,7 +4417,7 @@ MonoBehaviour:
     _f: []
     _g: []
     _h: []
-  _attachedRenderer: {fileID: 1842234892}
+  _attachedRenderer: {fileID: 0}
   _attachedGroupIndex: 0
   _favoriteGroupName: Controls
   _preferredRendererType:
@@ -4354,7 +4451,7 @@ MonoBehaviour:
     _f: []
     _g: []
     _h: []
-  _attachedRenderer: {fileID: 1842234892}
+  _attachedRenderer: {fileID: 0}
   _attachedGroupIndex: 0
   _favoriteGroupName: Controls
   _preferredRendererType:
@@ -5145,7 +5242,7 @@ MonoBehaviour:
     _f: []
     _g: []
     _h: []
-  _attachedRenderer: {fileID: 1842234892}
+  _attachedRenderer: {fileID: 0}
   _attachedGroupIndex: 1
   _favoriteGroupName: Images
   _preferredRendererType:
@@ -5298,7 +5395,7 @@ MonoBehaviour:
     _f: []
     _g: []
     _h: []
-  _attachedRenderer: {fileID: 1842234892}
+  _attachedRenderer: {fileID: 0}
   _attachedGroupIndex: 0
   _favoriteGroupName: Controls
   _preferredRendererType:
@@ -7092,7 +7189,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1842234890}
   - component: {fileID: 1842234891}
-  - component: {fileID: 1842234892}
   m_Layer: 0
   m_Name: PanelEditor
   m_TagString: Untagged
@@ -7136,239 +7232,6 @@ MonoBehaviour:
   curveButtonOffset: 0.036
   radiusMin: 0.3
   radiusMax: 2
---- !u!114 &1842234892
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1842234889}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: adb71699a7372344cb4e7a163c6c6922, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _selectedGroup: 1
-  _space: {fileID: 0}
-  _groups:
-  - _groupName: Controls
-    _renderingMethod:
-      _index: 0
-      _a:
-      - _useUv0: 1
-        _useUv1: 0
-        _useUv2: 0
-        _useUv3: 0
-        _useColors: 1
-        _bakedTint: {r: 1, g: 1, b: 1, a: 1}
-        _useNormals: 1
-        _shader: {fileID: 4800000, guid: ef0749350c0ebba4a93dd89982ea75a9, type: 3}
-        _visualLayer:
-          layerIndex: 0
-        _atlas:
-          _border: 0
-          _padding: 0
-          _mipMap: 1
-          _filterMode: 1
-          _format: 5
-          _maxAtlasSize: 4096
-          _extraTextures: []
-        _material: {fileID: 0}
-        _meshes:
-          meshes:
-          - {fileID: 0}
-        _packedTextures:
-          packedTextures: []
-        _atlasUvs:
-          _channel0:
-            _keys: []
-            _values: []
-          _channel1:
-            _keys: []
-            _values: []
-          _channel2:
-            _keys: []
-            _values: []
-          _channel3:
-            _keys: []
-            _values: []
-          _nullRects:
-          - serializedVersion: 2
-            x: 0
-            y: 0
-            width: 0
-            height: 0
-          - serializedVersion: 2
-            x: 0
-            y: 0
-            width: 0
-            height: 0
-          - serializedVersion: 2
-            x: 0
-            y: 0
-            width: 0
-            height: 0
-          - serializedVersion: 2
-            x: 0
-            y: 0
-            width: 0
-            height: 0
-        _motionType: 1
-        _createMeshRenderers: 0
-        _renderers: []
-      _b: []
-      _c: []
-    _features:
-      _table:
-      - id: 2
-        index: 0
-      _a: []
-      _b: []
-      _c:
-      - _dummyBool: 0
-      _d: []
-      _e: []
-      _f: []
-      _g: []
-      _h: []
-    _renderer: {fileID: 1842234892}
-    _graphics:
-    - {fileID: 225017158}
-    - {fileID: 225017157}
-    - {fileID: 1069620962}
-    - {fileID: 1069620961}
-    - {fileID: 906126869}
-    - {fileID: 906126868}
-    - {fileID: 2021943522}
-    - {fileID: 2021943521}
-    - {fileID: 1253032988}
-    _supportInfo:
-    - support: 0
-      message: 
-    _addRemoveSupported: 0
-  - _groupName: Images
-    _renderingMethod:
-      _index: 1
-      _a: []
-      _b:
-      - _useUv0: 1
-        _useUv1: 0
-        _useUv2: 0
-        _useUv3: 0
-        _useColors: 1
-        _bakedTint: {r: 1, g: 1, b: 1, a: 1}
-        _useNormals: 1
-        _shader: {fileID: 4800000, guid: d3d27a2e106d377478179084ad60fcdc, type: 3}
-        _visualLayer:
-          layerIndex: 0
-        _atlas:
-          _border: 0
-          _padding: 0
-          _mipMap: 1
-          _filterMode: 1
-          _format: 5
-          _maxAtlasSize: 4096
-          _extraTextures:
-          - texture: {fileID: 2800000, guid: b2e7700a21a27f2479b545b80517ff99, type: 3}
-            channel: 1
-          - texture: {fileID: 2800000, guid: 5c06ef7cae9d2c64e84e21ab3224dd0f, type: 3}
-            channel: 1
-          - texture: {fileID: 2800000, guid: 2c1b8fce73009ef438e2e17198965b7b, type: 3}
-            channel: 1
-        _material: {fileID: 0}
-        _meshes:
-          meshes:
-          - {fileID: 0}
-          - {fileID: 0}
-          - {fileID: 0}
-          - {fileID: 0}
-        _packedTextures:
-          packedTextures:
-          - propertyName: _MainTex
-            texture: {fileID: 0}
-        _atlasUvs:
-          _channel0:
-            _keys:
-            - {fileID: 2800000, guid: b2e7700a21a27f2479b545b80517ff99, type: 3}
-            - {fileID: 2800000, guid: 5c06ef7cae9d2c64e84e21ab3224dd0f, type: 3}
-            - {fileID: 2800000, guid: 2c1b8fce73009ef438e2e17198965b7b, type: 3}
-            _values:
-            - serializedVersion: 2
-              x: 0
-              y: 0
-              width: 0.5
-              height: 0.5
-            - serializedVersion: 2
-              x: 0.5
-              y: 0
-              width: 0.5
-              height: 0.5
-            - serializedVersion: 2
-              x: 0
-              y: 0.5
-              width: 0.5
-              height: 0.5
-          _channel1:
-            _keys: []
-            _values: []
-          _channel2:
-            _keys: []
-            _values: []
-          _channel3:
-            _keys: []
-            _values: []
-          _nullRects:
-          - serializedVersion: 2
-            x: 0
-            y: 0
-            width: 0
-            height: 0
-          - serializedVersion: 2
-            x: 0
-            y: 0
-            width: 0
-            height: 0
-          - serializedVersion: 2
-            x: 0
-            y: 0
-            width: 0
-            height: 0
-          - serializedVersion: 2
-            x: 0
-            y: 0
-            width: 0
-            height: 0
-      _c: []
-    _features:
-      _table:
-      - id: 2
-        index: 0
-      - id: 0
-        index: 0
-      _a:
-      - _dummyBool: 0
-        propertyName: _MainTex
-        channel: 1
-      _b: []
-      _c:
-      - _dummyBool: 0
-      _d: []
-      _e: []
-      _f: []
-      _g: []
-      _h: []
-    _renderer: {fileID: 1842234892}
-    _graphics:
-    - {fileID: 10143953}
-    - {fileID: 932845344}
-    - {fileID: 1227737715}
-    - {fileID: 696043461}
-    _supportInfo:
-    - support: 0
-      message: 
-    - support: 0
-      message: 
-    _addRemoveSupported: 1
 --- !u!1 &1846561712
 GameObject:
   m_ObjectHideFlags: 0
@@ -8322,7 +8185,7 @@ MonoBehaviour:
     _f: []
     _g: []
     _h: []
-  _attachedRenderer: {fileID: 1842234892}
+  _attachedRenderer: {fileID: 0}
   _attachedGroupIndex: 0
   _favoriteGroupName: Controls
   _preferredRendererType:
@@ -8356,7 +8219,7 @@ MonoBehaviour:
     _f: []
     _g: []
     _h: []
-  _attachedRenderer: {fileID: 1842234892}
+  _attachedRenderer: {fileID: 0}
   _attachedGroupIndex: 0
   _favoriteGroupName: Controls
   _preferredRendererType:
