@@ -12,13 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 30e0740316b4ebf47a35b33318319f39, type: 3}
   m_Name: PanelSchema
   m_EditorClassIdentifier: 
-  PanelType: 0
+  PanelType: 1
   SpaceType: 0
   SpaceCurveRadius: 0
-  PanelDimensions: {x: 0, y: 0}
-  Depth: 0
-  Radius: 0
-  RadiusSegments: 0
-  BorderThickness: 0
-  BorderColor: {r: 0, g: 0, b: 0, a: 0}
+  PanelDimensions: {x: 0.245, y: 0.125}
+  Depth: 0.0145
+  Radius: 0.03
+  RadiusSegments: 7
+  BorderThickness: 0.403
+  BorderColor: {r: 1, g: 1, b: 1, a: 1}
   Controls: []

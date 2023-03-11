@@ -3,8 +3,9 @@
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
@@ -16,3 +17,7 @@ MonoBehaviour:
   errorClip: {fileID: 8300000, guid: 54d9287a6aa0c6744a4e33f7e336de92, type: 3}
   alertClip: {fileID: 8300000, guid: 96392353aa5eebc4caebb5f039114aaf, type: 3}
   masterGroup: {fileID: 24300002, guid: 68d340510be90ad4494a9f1947bcff61, type: 2}
+  controlPrefabs:
+  - Type: 1
+    Prefab: {fileID: 2733170341325265295, guid: 8d37fa135d8d78c46ae249b0d36e4561,
+      type: 3}
