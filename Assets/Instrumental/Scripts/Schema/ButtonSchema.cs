@@ -9,33 +9,67 @@ namespace Instrumental.Schema
 	[System.Serializable]
 	public struct ButtonSchema
 	{
+		#region Constraint Defines
+		public const int MIN_CORNER_VERT_COUNT = 2;
+		public const int MAX_CORNER_VERT_COUNT = 8;
+
+		public const int MIN_WIDTH_VERT_COUNT = 0;
+		public const int MAX_WIDTH_VERT_COUNT = 8;
+
+		public const int MIN_BEVEL_SLICE_COUNT = 0;
+		public const int MAX_BEVEL_SLICE_COUNT = 3;
+
+		public const float MIN_EXTRUSION_DEPTH = 0;
+		public const float MAX_EXTRUSION_DEPTH = 1;
+
+		public const float MIN_RADIUS = 0;
+		public const float MAX_RADIUS = 1;
+
+		public const float MIN_BEVEL_RADIUS_PERCENT = 0;
+		public const float MAX_BEVEL_RADIUS_PERCENT = 1;
+
+		public const float MIN_BEVEL_EXTRUSION_PERCENT = 0;
+		public const float MAX_BEVEL_EXTRUSION_PERCENT = 1;
+
+		public const float MIN_RIM_WIDTH_PERCENT = 0;
+		public const float MAX_RIM_WIDTH_PERCENT = 1;
+
+		public const float MIN_RIM_DEPTH_PERCENT = 0;
+		public const float MAX_RIM_DEPTH_PERCENT = 1;
+		#endregion
+
 		// what kind of button options do we want to allow?
 
 		// rim or not rimmed?
 		public bool HasRim;
 
 		// number of radius slices
-		public int RadialSegments;
+		public int CornerVertCount;
+
+		public int WidthVertCount;
+
+		public int BevelSliceCount;
+
+		// button mesh depth
+		public float Depth;
+
+		// button height
+		public float Radius;
 
 		// square or round?
 
 		// width
 		public float Width;
 
-		// button height
-		public float Height;
+		public float BevelRadius;
 
-		// button mesh depth
-		public float Depth;
+		public float BevelDepth;
 
-		// number of segments?
-		public int WidthSegments;
+		public float RimWidth;
 
 		// button throw distance
 		public float ThrowDistance; // throw distance and height are good candidates
 				// for fixed values instead of variable
-
-		// InteractionButton or PreciseButton?
 
 		public static ButtonSchema CreateFromControl(ControlSchema control)
 		{
@@ -62,7 +96,7 @@ namespace Instrumental.Schema
 			#endregion
 
 			#region radial segments
-			int radialSegments = 4;
+			int cornerVertCount = 4;
 
 			if(control.ControlVariables.Any(item => item.Name == "RadialSegments" &&
 				item.Type == typeof(int)))
@@ -70,7 +104,7 @@ namespace Instrumental.Schema
 				ControlVariable controlVariable = control.ControlVariables.First(item => 
 				item.Name == "RadialSegments" && item.Type == typeof(int));
 
-				if(!int.TryParse(controlVariable.Value, out radialSegments))
+				if(!int.TryParse(controlVariable.Value, out cornerVertCount))
 				{
 					DoVariableError(control, controlVariable);
 				}
@@ -113,14 +147,14 @@ namespace Instrumental.Schema
 			#endregion
 
 			#region Width Segments
-			int widthSegments = 4;
+			int widthVertCount = 4;
 
-			if(control.ControlVariables.Any(item => item.Name == "WidthSegments" &&	item.Type == typeof(int)))
+			if(control.ControlVariables.Any(item => item.Name == "WidthVertCount" && item.Type == typeof(int)))
 			{
 				ControlVariable controlVariable = control.ControlVariables.First(item =>
-					item.Name == "WidthSegments" && item.Type == typeof(int));
+					item.Name == "WidthVertCount" && item.Type == typeof(int));
 
-				if(!int.TryParse(controlVariable.Value, out widthSegments))
+				if(!int.TryParse(controlVariable.Value, out widthVertCount))
 				{
 					DoVariableError(control, controlVariable);
 				}
@@ -134,12 +168,12 @@ namespace Instrumental.Schema
 			ButtonSchema button = new ButtonSchema
 			{
 				HasRim = hasRim,
-				Height = height,
+				Radius = height,
 				Width = width,
 				Depth = depth,
-				RadialSegments = radialSegments,
+				CornerVertCount = cornerVertCount,
 				ThrowDistance = throwDistance,
-				WidthSegments = widthSegments
+				WidthVertCount = widthVertCount
 			};
 
 			return button;
@@ -150,9 +184,9 @@ namespace Instrumental.Schema
 			return new ButtonSchema()
 			{
 				HasRim = true,
-				WidthSegments = 4,
-				Height = 0.02f,
-				RadialSegments = 4,
+				WidthVertCount = 4,
+				Radius = 0.02f,
+				CornerVertCount = 4,
 				ThrowDistance = 0.06f,
 				Width = 0.2f
 			};
@@ -197,17 +231,17 @@ namespace Instrumental.Schema
 			#endregion
 
 			#region Radial Segments
-			Func<ControlVariable, bool> radialSegmentsFunc = new Func<ControlVariable, bool>(item => 
-				item.Name == "RadialSegments" && item.Type == typeof(int));
+			Func<ControlVariable, bool> cornerVertCountFunc = new Func<ControlVariable, bool>(item => 
+				item.Name == "CornerVertCount" && item.Type == typeof(int));
 
-			if(control.ControlVariables.Any(radialSegmentsFunc))
+			if(control.ControlVariables.Any(cornerVertCountFunc))
 			{
 				int indexOf = control.ControlVariables.IndexOf(
-					control.ControlVariables.First(radialSegmentsFunc));
+					control.ControlVariables.First(cornerVertCountFunc));
 
 				ControlVariable controlVariable = control.ControlVariables[indexOf];
 
-				controlVariable.Value = RadialSegments.ToString();
+				controlVariable.Value = CornerVertCount.ToString();
 
 				control.ControlVariables[indexOf] = controlVariable;
 			}
@@ -215,9 +249,9 @@ namespace Instrumental.Schema
 			{
 				ControlVariable controlVariable = new ControlVariable()
 				{
-					Name = "RadialSegments",
+					Name = "CornerVertCount",
 					Type = typeof(int),
-					Value = RadialSegments.ToString()
+					Value = CornerVertCount.ToString()
 				};
 
 				control.ControlVariables.Add(controlVariable);
@@ -256,7 +290,7 @@ namespace Instrumental.Schema
 
 			#region Height
 			Func<ControlVariable, bool> heightFunc = new Func<ControlVariable, bool>(item =>
-				item.Name == "Height" && item.Type == typeof(float));
+				item.Name == "Radius" && item.Type == typeof(float));
 
 			if(control.ControlVariables.Any(heightFunc))
 			{
@@ -266,7 +300,7 @@ namespace Instrumental.Schema
 
 				ControlVariable controlVariable = control.ControlVariables[indexOf];
 
-				controlVariable.Value = Height.ToString();
+				controlVariable.Value = Radius.ToString();
 
 				control.ControlVariables[indexOf] = controlVariable;
 			}
@@ -275,9 +309,9 @@ namespace Instrumental.Schema
 				// create new one
 				ControlVariable controlVariable = new ControlVariable()
 				{
-					Name = "Height",
+					Name = "Radius",
 					Type = typeof(int),
-					Value = Height.ToString()
+					Value = Radius.ToString()
 				};
 
 				control.ControlVariables.Add(controlVariable);
@@ -298,7 +332,7 @@ namespace Instrumental.Schema
 
 				ControlVariable controlVariable = control.ControlVariables[indexOf];
 
-				controlVariable.Value = WidthSegments.ToString();
+				controlVariable.Value = WidthVertCount.ToString();
 
 				control.ControlVariables[indexOf] = controlVariable;
 			}
@@ -309,7 +343,7 @@ namespace Instrumental.Schema
 				{
 					Name = "WidthSegments",
 					Type = typeof(int),
-					Value = WidthSegments.ToString()
+					Value = WidthVertCount.ToString()
 				};
 
 				control.ControlVariables.Add(controlVariable);

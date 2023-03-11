@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+using Instrumental.Schema;
+
 namespace Instrumental.Modeling.ProceduralGraphics
 {
 	[ExecuteInEditMode]
@@ -10,47 +12,22 @@ namespace Instrumental.Modeling.ProceduralGraphics
 		public delegate void ModelPropertiesHandler(ButtonModel sender);
 		public event ModelPropertiesHandler PropertiesChanged;
 
-		public const int MIN_CORNER_VERT_COUNT = 2;
-		public const int MAX_CORNER_VERT_COUNT = 8;
+		[SerializeField] bool hasRim = true;
 
-		public const int MIN_WIDTH_VERT_COUNT = 0;
-		public const int MAX_WIDTH_VERT_COUNT = 8;
-
-		public const int MIN_BEVEL_SLICE_COUNT = 0;
-		public const int MAX_BEVEL_SLICE_COUNT = 3;
-
-		public const float MIN_EXTRUSION_DEPTH = 0;
-		public const float MAX_EXTRUSION_DEPTH = 1;
-
-		public const float MIN_RADIUS = 0;
-		public const float MAX_RADIUS = 1;
-
-		public const float MIN_BEVEL_RADIUS_PERCENT = 0;
-		public const float MAX_BEVEL_RADIUS_PERCENT = 1;
-
-		public const float MIN_BEVEL_EXTRUSION_PERCENT = 0;
-		public const float MAX_BEVEL_EXTRUSION_PERCENT = 1;
-
-		public const float MIN_RIM_WIDTH_PERCENT = 0;
-		public const float MAX_RIM_WIDTH_PERCENT = 1;
-
-		public const float MIN_RIM_DEPTH_PERCENT = 0;
-		public const float MAX_RIM_DEPTH_PERCENT = 1;
-
-		[Range(MIN_CORNER_VERT_COUNT, MAX_CORNER_VERT_COUNT)]
+		[Range(ButtonSchema.MIN_CORNER_VERT_COUNT, ButtonSchema.MAX_CORNER_VERT_COUNT)]
 		[SerializeField] int cornerVertCount = 4;
 
-		[Range(MIN_WIDTH_VERT_COUNT, MAX_WIDTH_VERT_COUNT)]
+		[Range(ButtonSchema.MIN_WIDTH_VERT_COUNT, ButtonSchema.MAX_WIDTH_VERT_COUNT)]
 		[SerializeField] int widthVertCount = 4;
 
-		[Range(MIN_BEVEL_SLICE_COUNT, MAX_BEVEL_SLICE_COUNT)]
+		[Range(ButtonSchema.MIN_BEVEL_SLICE_COUNT, ButtonSchema.MAX_BEVEL_SLICE_COUNT)]
 		[SerializeField] int bevelSliceCount = 1;
 
-		[Range(MIN_EXTRUSION_DEPTH, MAX_EXTRUSION_DEPTH)]
+		[Range(ButtonSchema.MIN_EXTRUSION_DEPTH, ButtonSchema.MAX_EXTRUSION_DEPTH)]
 		[SerializeField]
 		float extrusionDepth;
 
-		[Range(MIN_RADIUS, MAX_RADIUS)]
+		[Range(ButtonSchema.MIN_RADIUS, ButtonSchema.MAX_RADIUS)]
 		[SerializeField]
 		float radius;
 
@@ -60,21 +37,40 @@ namespace Instrumental.Modeling.ProceduralGraphics
 		[SerializeField]
 		float width;
 
-		[Range(MIN_BEVEL_RADIUS_PERCENT, MAX_BEVEL_RADIUS_PERCENT)]
+		[Range(ButtonSchema.MIN_BEVEL_RADIUS_PERCENT, ButtonSchema.MAX_BEVEL_RADIUS_PERCENT)]
 		[SerializeField]
 		float bevelRadius;
 
-		[Range(MIN_BEVEL_EXTRUSION_PERCENT, MAX_BEVEL_EXTRUSION_PERCENT)]
+		[Range(ButtonSchema.MIN_BEVEL_EXTRUSION_PERCENT, ButtonSchema.MAX_BEVEL_EXTRUSION_PERCENT)]
 		[SerializeField]
 		float bevelExtrusionDepth;
 
-		[Range(MIN_RIM_WIDTH_PERCENT, MAX_RIM_WIDTH_PERCENT)]
+		[Range(ButtonSchema.MIN_RIM_WIDTH_PERCENT, ButtonSchema.MAX_RIM_WIDTH_PERCENT)]
 		[SerializeField]
 		float rimWidthPercentage = 1;
 
-		[Range(MIN_RIM_DEPTH_PERCENT, MAX_RIM_DEPTH_PERCENT)]
+		[Range(ButtonSchema.MIN_RIM_DEPTH_PERCENT, ButtonSchema.MAX_RIM_DEPTH_PERCENT)]
 		[SerializeField]
 		float rimDepthPercentage = 0.5f;
+
+		public bool HasRim { set { HasRim = value; SetPropertiesChanged(); } }
+		public int CornerVertCount { set { cornerVertCount = Mathf.Clamp(value, ButtonSchema.MIN_CORNER_VERT_COUNT, ButtonSchema.MAX_CORNER_VERT_COUNT); SetPropertiesChanged(); } }
+		public int WidthVertCount { set { widthVertCount = Mathf.Max(0, value); SetPropertiesChanged(); } }
+		public int BevelSliceCount { set { bevelSliceCount = Mathf.Clamp(value, ButtonSchema.MIN_BEVEL_SLICE_COUNT, ButtonSchema.MAX_BEVEL_SLICE_COUNT); SetPropertiesChanged(); } }
+
+		public float Depth { set { extrusionDepth = Mathf.Clamp(value, ButtonSchema.MIN_EXTRUSION_DEPTH, ButtonSchema.MAX_EXTRUSION_DEPTH); SetPropertiesChanged(); } }
+
+		public float Radius { set { radius = Mathf.Clamp(value, ButtonSchema.MIN_RADIUS, ButtonSchema.MAX_RADIUS); SetPropertiesChanged(); } }
+
+		public float Width { set { width = value; SetPropertiesChanged(); } }
+
+		public float BevelRadius { set { bevelRadius = Mathf.Clamp(value, ButtonSchema.MIN_BEVEL_RADIUS_PERCENT, ButtonSchema.MAX_BEVEL_RADIUS_PERCENT); SetPropertiesChanged(); } }
+
+		public float BevelDepth { set { bevelExtrusionDepth = Mathf.Clamp(value, ButtonSchema.MIN_BEVEL_EXTRUSION_PERCENT, ButtonSchema.MAX_BEVEL_EXTRUSION_PERCENT); SetPropertiesChanged(); } }
+		public float RimWidth { set { rimWidthPercentage = Mathf.Clamp01(value); SetPropertiesChanged(); } }
+
+		public float RimDepth { set { rimDepthPercentage = Mathf.Clamp01(value); SetPropertiesChanged(); } }
+
 
 		#region Face Mesh Stuff
 		[Header("Face Color")]
@@ -159,6 +155,7 @@ namespace Instrumental.Modeling.ProceduralGraphics
 			}
 		}
 
+		#region Mesh Generation
 		void GenerateFaceMesh()
 		{
 			if (_faceMesh == null) _faceMesh = new Mesh();
@@ -266,47 +263,57 @@ namespace Instrumental.Modeling.ProceduralGraphics
 		}
 		void GenerateRimMesh()
 		{
-			if (_rimMesh == null) _rimMesh = new Mesh();
-			_rimMesh.MarkDynamic();
+			if (hasRim)
+			{
+				if (_rimMesh == null) _rimMesh = new Mesh();
+				_rimMesh.MarkDynamic();
 
-			int vertexBaseID = 0;
-			rimOuterLoopBack = ModelUtils.CreateEdgeLoop(ref vertexBaseID, closeLoop,
-				EdgeLoopVertCount);
-			rimOuterLoopFront = ModelUtils.CreateEdgeLoop(ref vertexBaseID, closeLoop,
-				EdgeLoopVertCount);
+				int vertexBaseID = 0;
+				rimOuterLoopBack = ModelUtils.CreateEdgeLoop(ref vertexBaseID, closeLoop,
+					EdgeLoopVertCount);
+				rimOuterLoopFront = ModelUtils.CreateEdgeLoop(ref vertexBaseID, closeLoop,
+					EdgeLoopVertCount);
 
-			rimInnerLoopBack = ModelUtils.CreateEdgeLoop(ref vertexBaseID, closeLoop,
-				EdgeLoopVertCount);
-			rimInnerLoopFront = ModelUtils.CreateEdgeLoop(ref vertexBaseID, closeLoop,
-				EdgeLoopVertCount);
+				rimInnerLoopBack = ModelUtils.CreateEdgeLoop(ref vertexBaseID, closeLoop,
+					EdgeLoopVertCount);
+				rimInnerLoopFront = ModelUtils.CreateEdgeLoop(ref vertexBaseID, closeLoop,
+					EdgeLoopVertCount);
 
-			rimVertices = new Vector3[rimOuterLoopBack.VertCount + rimOuterLoopFront.VertCount +
-				rimInnerLoopBack.VertCount + rimInnerLoopFront.VertCount];
+				rimVertices = new Vector3[rimOuterLoopBack.VertCount + rimOuterLoopFront.VertCount +
+					rimInnerLoopBack.VertCount + rimInnerLoopFront.VertCount];
 
-			int triangleBaseID = 0;
-			rimOuterBridge = ModelUtils.CreateExtrustion(ref triangleBaseID, rimOuterLoopBack,
-				rimOuterLoopFront);
-			rimOuterInnerBridge = ModelUtils.CreateExtrustion(ref triangleBaseID, rimOuterLoopFront,
-				rimInnerLoopFront);
-			rimInnerBridge = ModelUtils.CreateExtrustion(ref triangleBaseID, rimInnerLoopBack,
-				rimInnerLoopFront);
+				int triangleBaseID = 0;
+				rimOuterBridge = ModelUtils.CreateExtrustion(ref triangleBaseID, rimOuterLoopBack,
+					rimOuterLoopFront);
+				rimOuterInnerBridge = ModelUtils.CreateExtrustion(ref triangleBaseID, rimOuterLoopFront,
+					rimInnerLoopFront);
+				rimInnerBridge = ModelUtils.CreateExtrustion(ref triangleBaseID, rimInnerLoopBack,
+					rimInnerLoopFront);
 
-			SetRimVertices();
-			GenerateRimColors(out rimColors);
+				SetRimVertices();
+				GenerateRimColors(out rimColors);
 
-			int triangleIndexCount = rimOuterBridge.GetTriangleIndexCount() +
-				rimOuterInnerBridge.GetTriangleIndexCount() +
-				rimInnerBridge.GetTriangleIndexCount();
-			rimTriangles = new int[triangleIndexCount];
+				int triangleIndexCount = rimOuterBridge.GetTriangleIndexCount() +
+					rimOuterInnerBridge.GetTriangleIndexCount() +
+					rimInnerBridge.GetTriangleIndexCount();
+				rimTriangles = new int[triangleIndexCount];
 
-			// triangulate our extrusions
-			rimOuterBridge.TriangulateBridge(ref rimTriangles, false);
-			rimOuterInnerBridge.TriangulateBridge(ref rimTriangles, false);
-			rimInnerBridge.TriangulateBridge(ref rimTriangles, false);
-			_rimMesh.vertices = rimVertices;
-			_rimMesh.triangles = rimTriangles;
-			_rimMesh.colors = rimColors;
-			_rimMesh.RecalculateNormals();
+				// triangulate our extrusions
+				rimOuterBridge.TriangulateBridge(ref rimTriangles, false);
+				rimOuterInnerBridge.TriangulateBridge(ref rimTriangles, false);
+				rimInnerBridge.TriangulateBridge(ref rimTriangles, false);
+				_rimMesh.vertices = rimVertices;
+				_rimMesh.triangles = rimTriangles;
+				_rimMesh.colors = rimColors;
+				_rimMesh.RecalculateNormals();
+			}
+			else
+			{
+				_rimMesh = null;
+				rimVertices = new Vector3[0];
+				rimTriangles = new int[0];
+				rimColors = new Color[0];
+			}
 		}
 
 		void GenerateMesh()
@@ -314,10 +321,9 @@ namespace Instrumental.Modeling.ProceduralGraphics
 			GenerateFaceMesh();
 			GenerateRimMesh();
 		}
+		#endregion
 
-		
-		// todo: update these to edit any vertex buffer,
-		// not just the face buffer
+		#region Vertex Setting
 		void LoopSide(ref Vector3[] vertices,
 			int baseID, bool isLeft, float depth, float sideRadius)
 		{
@@ -412,6 +418,7 @@ namespace Instrumental.Modeling.ProceduralGraphics
 			LoopSide(ref rimVertices, (rimInnerLoopBack.VertexBaseID + (cornerVertCount * 2)) + widthVertCount, false, 0, radius);
 			LoopEdge(ref rimVertices, (rimInnerLoopBack.VertexBaseID + (cornerVertCount * 4)) + widthVertCount, false, 0, radius);
 		}
+		#endregion
 
 		// Update is called once per frame
 		void Update()
@@ -447,8 +454,11 @@ namespace Instrumental.Modeling.ProceduralGraphics
 				Gizmos.color = Color.green;
 				ModelUtils.DrawMesh(faceVertices, faceTriangles);
 
-				Gizmos.color = Color.blue;
-				ModelUtils.DrawMesh(rimVertices, rimTriangles);
+				if (hasRim)
+				{
+					Gizmos.color = Color.blue;
+					ModelUtils.DrawMesh(rimVertices, rimTriangles);
+				}
 			}
 		}
 	}

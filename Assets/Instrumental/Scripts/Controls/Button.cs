@@ -10,7 +10,7 @@ namespace Instrumental.Controls
 {
     public class Button : UIControl
     {
-		ButtonSchema buttonSchema;
+		[SerializeField] ButtonSchema buttonSchema;
 
 		// todo: handle all of our proc gen graphics and stuff
 		ButtonUnityGraphic buttonGraphic;
@@ -26,10 +26,10 @@ namespace Instrumental.Controls
 			}
 		}
 
-		public int RadialSegments { get { return buttonSchema.RadialSegments; }
+		public int CornerVertCount { get { return buttonSchema.CornerVertCount; }
 			set
 			{
-				if (value != RadialSegments) { buttonSchema.RadialSegments = value; RebuildMesh(); }
+				if (value != CornerVertCount) { buttonSchema.CornerVertCount = value; RebuildMesh(); }
 			}
 		}
 
@@ -40,19 +40,19 @@ namespace Instrumental.Controls
 			}
 		}
 
-		public float Height { get { return buttonSchema.Height; }
+		public float Height { get { return buttonSchema.Radius; }
 			set
 			{
-				if (Height != value) { buttonSchema.Height = value; UpdateVertsOnly(); }
+				if (Height != value) { buttonSchema.Radius = value; UpdateVertsOnly(); }
 			}
 		}
 
 		public float Depth { get { return buttonSchema.Depth; } }
 
-		public int WidthSegments { get { return buttonSchema.WidthSegments; }
+		public int WidthSegments { get { return buttonSchema.WidthVertCount; }
 			set
 			{
-				if (WidthSegments != value) { buttonSchema.WidthSegments = value; RebuildMesh(); }
+				if (WidthSegments != value) { buttonSchema.WidthVertCount = value; RebuildMesh(); }
 			}
 		}
 

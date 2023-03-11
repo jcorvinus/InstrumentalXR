@@ -240,6 +240,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mode: 0
   orientationPreviewID: 0
+  buttonSchema:
+    HasRim: 0
+    CornerVertCount: 0
+    WidthVertCount: 0
+    BevelSliceCount: 0
+    Depth: 0
+    Radius: 0
+    Width: 0
+    BevelRadius: 0
+    BevelDepth: 0
+    RimWidth: 0
+    ThrowDistance: 0
 --- !u!54 &6291059825267299457
 Rigidbody:
   m_ObjectHideFlags: 0
