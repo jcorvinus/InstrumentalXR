@@ -151,20 +151,23 @@ namespace Instrumental.Editing
 
         private void OnDrawGizmos()
         {
-            if (uiSchema != null)
+            if (uiSchema)
             {
                 Gizmos.matrix = panel.transform.localToWorldMatrix;
                 Gizmos.color = Color.white;
-                Gizmos.DrawWireCube(Vector3.zero, new Vector3(uiSchema.Panel.PanelDimensions.x,
-                    uiSchema.Panel.PanelDimensions.y, uiSchema.Panel.Depth));
+                if (uiSchema.Panel)
+                {
+                    Gizmos.DrawWireCube(Vector3.zero, new Vector3(uiSchema.Panel.PanelDimensions.x,
+                        uiSchema.Panel.PanelDimensions.y, uiSchema.Panel.Depth));
 
-                Gizmos.color = Color.cyan;
-                Gizmos.DrawWireCube(Vector3.zero, new Vector3(FilletPanel.MIN_DIMENSION_SIZE, FilletPanel.MIN_DIMENSION_SIZE,
-                    uiSchema.Panel.Depth));
+                    Gizmos.color = Color.cyan;
+                    Gizmos.DrawWireCube(Vector3.zero, new Vector3(FilletPanel.MIN_DIMENSION_SIZE, FilletPanel.MIN_DIMENSION_SIZE,
+                        uiSchema.Panel.Depth));
 
-                Gizmos.color = Color.magenta;
-                Gizmos.DrawWireCube(Vector3.zero, new Vector3(FilletPanel.MAX_DIMENSION_WIDTH, FilletPanel.MAX_DIMENSION_HEIGHT,
-                    uiSchema.Panel.Depth));
+                    Gizmos.color = Color.magenta;
+                    Gizmos.DrawWireCube(Vector3.zero, new Vector3(FilletPanel.MAX_DIMENSION_WIDTH, FilletPanel.MAX_DIMENSION_HEIGHT,
+                        uiSchema.Panel.Depth));
+                }
                 Gizmos.matrix = Matrix4x4.identity;
             }
 

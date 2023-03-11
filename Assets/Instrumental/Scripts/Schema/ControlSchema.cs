@@ -19,8 +19,8 @@ namespace Instrumental.Schema
     /// we're going to dump all the variables into a single struct and
     /// let the control classes handle loading and saving
     /// </summary>
-    [System.Serializable]
-    public struct ControlSchema
+    [CreateAssetMenu(fileName = "ControlSchema", menuName = "Instrumental/ControlSchema")]
+    public class ControlSchema : ScriptableObject
     {
         [Header("Common Variables")]
         public ControlType Type;

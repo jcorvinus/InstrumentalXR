@@ -7,6 +7,7 @@ namespace Instrumental.Schema
     /// <summary>
     /// Storage class for a UI description.
     /// </summary>
+    [CreateAssetMenu(fileName = "UISchema", menuName ="Instrumental/UISchema")]
     public class UISchema : ScriptableObject
     {
         public const string Version = "v.0.0.0";

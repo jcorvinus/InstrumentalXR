@@ -17,8 +17,8 @@ namespace Instrumental.Schema
         Spherical
     }
 
-    [System.Serializable]
-    public struct PanelSchema
+    [CreateAssetMenu(fileName = "PanelSchema", menuName = "Instrumental/PanelSchema")]
+    public class PanelSchema : ScriptableObject
     {
         public PanelType PanelType;
         public SpaceType SpaceType;
