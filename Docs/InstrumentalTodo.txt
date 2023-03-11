@@ -91,6 +91,17 @@ Material property block data for:
 
 - Also the ability to do cubemaps for shiny stuff
 
+-----------------------------------
+Button interaction:
+I've got a bit of a problem. I've got the old fingerbutton class, and that's all well and good and all. But do I really want to have 'button' and 'fingerbutton' as separate classes? It kinda makes sense - we can instantiate and config FingerButton at runtime if we're in runtime mode, and leave it out if we're in design mode. Would still be nice to have the collider, but meh duplicating the collider generation isn't that big of a deal. I guess I didn't really think through having design time and runtime live along side eachother very much during the intial phase, figured I'd just yolo it. And fingerbutton? What if we've got other button pressing activation interactions? What about foot pressing? Eye pressing (weird but not impossible, esp with multimodal. What about distance pressing?) Not a pressing matter for right now (lololol)
+
+If we did do the generic thing, we could split it up like this:
+store a list of button pressor positions
+These can be vector3s. xy for 2d position, and z for normalized depth
+We can have standard behavior for fully 3d pressors - fingers, feet, whatever.
+For pseudo 3d pressors like gaze dots, we can handle the xy like normal, but map the depth amount to a separate value, like a pinch amount for a remote pinch raycast, 
+
+Looking at how UIControl is currently setup. I wonder if we can set up proper handling for the difference between design time behavior, palette behavior, and runtime behavior. It's already an abstract class, but I wonder if we can have abstract handlers or something? idk the hacky way right now seems to be to have separate components for each mode. It looks like all UIControls look for a panel in their parent transform heirarchy. Notable in that we don't have any existing examples of this except the Panel object in the editing studio - the one that is the target of edit mode. Looks like Panel is always set to isDesignerMode, which is definitely a limitation. I had clearly originally made it so that only this editor could author panels and controls. Blegh, this had only been set up for the old way.
 
 ------------------------------------
 Solving the 'tightly packed gizmos' issue:
