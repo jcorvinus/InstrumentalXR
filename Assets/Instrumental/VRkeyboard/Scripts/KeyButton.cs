@@ -1,13 +1,15 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+using Instrumental.Controls;
+
 namespace VRKeyboard
 {
     /// <summary>
     /// Connects to a button and relays those events to
     /// a virtual keyboard.
     /// </summary>
-    [RequireComponent(typeof(FingerButton))]
+    [RequireComponent(typeof(ButtonRuntime))]
     public class KeyButton : MonoBehaviour
     {
         public delegate void KeyButtonEventHandler(KeyButton sender);
@@ -16,7 +18,7 @@ namespace VRKeyboard
         public event KeyButtonEventHandler HoverLost;
 
         private Keyboard keyboard;
-        private FingerButton button;
+        private ButtonRuntime button;
 
         private bool upperCase = false;
         public bool UpperCase { get { return upperCase; } set { upperCase = value; SetText(); } }
@@ -41,7 +43,7 @@ namespace VRKeyboard
 
         void Awake()
         {
-            button = GetComponent<FingerButton>();
+            button = GetComponent<ButtonRuntime>();
             keyboard = GetComponentInParent<Keyboard>();
 
             if(keyboard == null)
@@ -88,17 +90,17 @@ namespace VRKeyboard
         }
 
         #region Event Methods
-        private void OnButtonActivated(FingerButton sender)
+        private void OnButtonActivated(ButtonRuntime sender)
         {
             if (Activated != null) Activated(this);
         }
 
-        private void OnButtonHoverGained(FingerButton sender)
+        private void OnButtonHoverGained(ButtonRuntime sender)
         {
             if (HoverGained != null) HoverGained(this);
         }
 
-        private void OnButtonHoverLost(FingerButton sender)
+        private void OnButtonHoverLost(ButtonRuntime sender)
         {
             if (HoverLost != null) HoverLost(this);
         }

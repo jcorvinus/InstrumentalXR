@@ -8,6 +8,8 @@ using UnityEngine.UI;
 
 using CatchCo;
 
+using Instrumental.Controls;
+
 namespace VRKeyboard
 {
     /// <summary>
@@ -26,11 +28,11 @@ namespace VRKeyboard
             public KeyCode[] KeyModes;
             public KeyButton Button;
 
-            private FingerButton fingerButton;
+            private ButtonRuntime fingerButton;
             private Collider _collider; // hackjob
             private GameObject faceIcon;
 
-            public FingerButton FButton { get { return fingerButton; }  set { fingerButton = value; } }
+            public ButtonRuntime FButton { get { return fingerButton; }  set { fingerButton = value; } }
             public Collider collider { get { return _collider; } set { _collider = value; } } 
             public GameObject FaceIcon { get { return faceIcon; } set { faceIcon = value; } }
         }
@@ -373,7 +375,7 @@ namespace VRKeyboard
 			transform.localScale = Vector3.zero;
 		}
 
-		private void ModeButton_ButtonActivated(FingerButton sender)
+		private void ModeButton_ButtonActivated(ButtonRuntime sender)
         {
             ChangeMode();
         }
@@ -389,7 +391,7 @@ namespace VRKeyboard
 
         KeyInfo ButtonInit(KeyInfo button, bool textFace)
         {
-            button.FButton = button.Button.GetComponent<FingerButton>();
+            button.FButton = button.Button.GetComponent<ButtonRuntime>();
             if (textFace)
             {
                 Transform buttonFace = button.FButton.ButtonFace;

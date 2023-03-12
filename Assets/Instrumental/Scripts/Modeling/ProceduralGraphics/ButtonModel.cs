@@ -6,71 +6,26 @@ using Instrumental.Schema;
 
 namespace Instrumental.Modeling.ProceduralGraphics
 {
-	[ExecuteInEditMode]
 	public class ButtonModel : MonoBehaviour
 	{
 		public delegate void ModelPropertiesHandler(ButtonModel sender);
 		public event ModelPropertiesHandler PropertiesChanged;
 
-		[SerializeField] bool hasRim = true;
+		const bool closeLoop = true; // never change this
 
-		[Range(ButtonSchema.MIN_CORNER_VERT_COUNT, ButtonSchema.MAX_CORNER_VERT_COUNT)]
-		[SerializeField] int cornerVertCount = 4;
-
-		[Range(ButtonSchema.MIN_WIDTH_VERT_COUNT, ButtonSchema.MAX_WIDTH_VERT_COUNT)]
-		[SerializeField] int widthVertCount = 4;
-
-		[Range(ButtonSchema.MIN_BEVEL_SLICE_COUNT, ButtonSchema.MAX_BEVEL_SLICE_COUNT)]
-		[SerializeField] int bevelSliceCount = 1;
-
-		[Range(ButtonSchema.MIN_EXTRUSION_DEPTH, ButtonSchema.MAX_EXTRUSION_DEPTH)]
-		[SerializeField]
-		float extrusionDepth;
-
-		[Range(ButtonSchema.MIN_RADIUS, ButtonSchema.MAX_RADIUS)]
-		[SerializeField]
-		float radius;
-
-		const bool closeLoop = true;
-
-		[Range(0, 0.1f)]
-		[SerializeField]
-		float width;
-
-		[Range(ButtonSchema.MIN_BEVEL_RADIUS_PERCENT, ButtonSchema.MAX_BEVEL_RADIUS_PERCENT)]
-		[SerializeField]
-		float bevelRadius;
-
-		[Range(ButtonSchema.MIN_BEVEL_EXTRUSION_PERCENT, ButtonSchema.MAX_BEVEL_EXTRUSION_PERCENT)]
-		[SerializeField]
-		float bevelExtrusionDepth;
-
-		[Range(ButtonSchema.MIN_RIM_WIDTH_PERCENT, ButtonSchema.MAX_RIM_WIDTH_PERCENT)]
-		[SerializeField]
-		float rimWidthPercentage = 1;
-
-		[Range(ButtonSchema.MIN_RIM_DEPTH_PERCENT, ButtonSchema.MAX_RIM_DEPTH_PERCENT)]
-		[SerializeField]
+		// I think we'll eventually migrate this into a stored copy of a button
+		// schema
+		bool hasRim = true;		
+		int cornerVertCount = 4;
+		int widthVertCount = 4;
+		int bevelSliceCount = 1;
+		float extrusionDepth=0.017f;
+		float radius=0.022f;
+		float width=0.05f;
+		float bevelRadius= 0.697f;
+		float bevelExtrusionDepth = 0.246f;
+		float rimWidthPercentage = 0.106f;
 		float rimDepthPercentage = 0.5f;
-
-		public bool HasRim { set { HasRim = value; SetPropertiesChanged(); } }
-		public int CornerVertCount { set { cornerVertCount = Mathf.Clamp(value, ButtonSchema.MIN_CORNER_VERT_COUNT, ButtonSchema.MAX_CORNER_VERT_COUNT); SetPropertiesChanged(); } }
-		public int WidthVertCount { set { widthVertCount = Mathf.Max(0, value); SetPropertiesChanged(); } }
-		public int BevelSliceCount { set { bevelSliceCount = Mathf.Clamp(value, ButtonSchema.MIN_BEVEL_SLICE_COUNT, ButtonSchema.MAX_BEVEL_SLICE_COUNT); SetPropertiesChanged(); } }
-
-		public float Depth { set { extrusionDepth = Mathf.Clamp(value, ButtonSchema.MIN_EXTRUSION_DEPTH, ButtonSchema.MAX_EXTRUSION_DEPTH); SetPropertiesChanged(); } }
-
-		public float Radius { set { radius = Mathf.Clamp(value, ButtonSchema.MIN_RADIUS, ButtonSchema.MAX_RADIUS); SetPropertiesChanged(); } }
-
-		public float Width { set { width = value; SetPropertiesChanged(); } }
-
-		public float BevelRadius { set { bevelRadius = Mathf.Clamp(value, ButtonSchema.MIN_BEVEL_RADIUS_PERCENT, ButtonSchema.MAX_BEVEL_RADIUS_PERCENT); SetPropertiesChanged(); } }
-
-		public float BevelDepth { set { bevelExtrusionDepth = Mathf.Clamp(value, ButtonSchema.MIN_BEVEL_EXTRUSION_PERCENT, ButtonSchema.MAX_BEVEL_EXTRUSION_PERCENT); SetPropertiesChanged(); } }
-		public float RimWidth { set { rimWidthPercentage = Mathf.Clamp01(value); SetPropertiesChanged(); } }
-
-		public float RimDepth { set { rimDepthPercentage = Mathf.Clamp01(value); SetPropertiesChanged(); } }
-
 
 		#region Face Mesh Stuff
 		[Header("Face Color")]
@@ -145,6 +100,58 @@ namespace Instrumental.Modeling.ProceduralGraphics
 		private void OnEnable()
 		{
 			GenerateMesh();
+		}
+
+		public void SetNewButtonSchema(ButtonSchema newSchema)
+		{
+			// check deltas
+			bool updatedHasRim = newSchema.HasRim != hasRim;
+			hasRim = newSchema.HasRim;
+
+			bool updatedCornerVertCount = newSchema.CornerVertCount != cornerVertCount;
+			cornerVertCount = newSchema.CornerVertCount;
+
+			bool updatedWidthVertCount = newSchema.WidthVertCount != widthVertCount;
+			widthVertCount = newSchema.WidthVertCount;
+
+			bool updatedBevelSliceCount = newSchema.BevelSliceCount != bevelSliceCount;
+			bevelSliceCount = newSchema.BevelSliceCount;
+
+			bool updatedExtrusionDepth = newSchema.Depth != extrusionDepth;
+			extrusionDepth = newSchema.Depth;
+
+			// missing radius and width
+			bool updatedRadius = newSchema.Radius != radius;
+			radius = newSchema.Radius;
+
+			bool updatedWidth = newSchema.Width != width;
+			width = newSchema.Width;
+
+			// bevel radius
+			bool updatedBevelRadius = newSchema.BevelRadius != bevelRadius;
+			bevelRadius = newSchema.BevelRadius;
+
+			// bevel extrusion
+			bool updatedBevelExtrusion = newSchema.BevelDepth != bevelExtrusionDepth;
+			bevelExtrusionDepth = newSchema.BevelDepth;
+
+			bool updatedRimWidthPercentage = newSchema.RimWidth != rimWidthPercentage;
+			rimWidthPercentage = newSchema.RimWidth;
+
+			bool updatedRimDepthPercentage = newSchema.RimDepth != rimDepthPercentage;
+			rimDepthPercentage = newSchema.RimDepth;
+
+			bool anyPropertyChanged = updatedHasRim || updatedCornerVertCount || updatedWidthVertCount
+				|| updatedBevelSliceCount || updatedExtrusionDepth || updatedRadius 
+				|| updatedWidth || updatedBevelRadius || updatedBevelExtrusion 
+				|| updatedRimWidthPercentage || updatedRimDepthPercentage;
+
+			if (anyPropertyChanged)
+			{
+				GenerateMesh(); // todo: split this into generating mesh and updating verts
+					// according to the owning class' expected behaviors next
+				SetPropertiesChanged();
+			}
 		}
 
 		private void SetPropertiesChanged()

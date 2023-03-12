@@ -19,6 +19,9 @@ namespace Instrumental
         [SerializeField] AudioClip itemPlaceClip;
         [SerializeField] AudioClip errorClip;
         [SerializeField] AudioClip alertClip;
+        [SerializeField] AudioClip hoverClip;
+        [SerializeField] AudioClip activateClip;
+        [SerializeField] AudioClip deactivateClip;
         [SerializeField] AudioMixerGroup masterGroup;
 
         // control accessors
@@ -29,6 +32,12 @@ namespace Instrumental
         public AudioClip ItemPlaceClip { get { return itemPlaceClip; } }
         public AudioClip ErrorClip { get { return errorClip; } } 
         public AudioClip AlertClip { get { return alertClip; } }
+
+        public AudioClip HoverClip { get { return hoverClip; } }
+
+        public AudioClip ActivateClip { get { return activateClip; } }
+
+        public AudioClip DeactivateClip { get { return deactivateClip; } }
 
         public AudioMixerGroup MasterGroup { get { return masterGroup; } }
     }

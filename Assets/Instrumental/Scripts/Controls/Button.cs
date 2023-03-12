@@ -10,10 +10,10 @@ namespace Instrumental.Controls
 {
     public class Button : UIControl
     {
-		[SerializeField] ButtonSchema buttonSchema;
-
-		// todo: handle all of our proc gen graphics and stuff
-		ButtonUnityGraphic buttonGraphic;
+		[SerializeField] ButtonModel buttonModel;
+		[SerializeField] ButtonSchema buttonSchema = ButtonSchema.GetDefault();
+		[SerializeField] BoxCollider boxCollider;
+		ButtonRuntime buttonRuntimeBehavior;
 
 		// accessors for schema variables
 		public bool HasRim { get { return buttonSchema.HasRim; }
@@ -29,7 +29,30 @@ namespace Instrumental.Controls
 		public int CornerVertCount { get { return buttonSchema.CornerVertCount; }
 			set
 			{
-				if (value != CornerVertCount) { buttonSchema.CornerVertCount = value; RebuildMesh(); }
+				if (CornerVertCount != value) { buttonSchema.CornerVertCount = value; RebuildMesh(); }
+			}
+		}
+
+		public int WidthSliceCount { get { return buttonSchema.WidthVertCount;  }
+			set { if (WidthSliceCount != value) { buttonSchema.WidthVertCount = value; RebuildMesh(); } }
+		}
+
+		public int BevelSliceCount { get { return buttonSchema.BevelSliceCount; }
+			set { if (BevelSliceCount != value) { buttonSchema.BevelSliceCount = value; RebuildMesh(); } }
+		}
+
+		public float Depth { get { return buttonSchema.Depth; } 
+			set { if (Depth != value) { buttonSchema.Depth = value; UpdateVertsOnly(); }  } }
+
+		/// <summary>
+		/// In round buttons, height is also radius!
+		/// </summary>
+		public float Height
+		{
+			get { return buttonSchema.Radius; }
+			set
+			{
+				if (Height != value) { buttonSchema.Radius = value; UpdateVertsOnly(); }
 			}
 		}
 
@@ -40,23 +63,23 @@ namespace Instrumental.Controls
 			}
 		}
 
-		public float Height { get { return buttonSchema.Radius; }
-			set
-			{
-				if (Height != value) { buttonSchema.Radius = value; UpdateVertsOnly(); }
-			}
+		public float BevelRadius { get { return buttonSchema.BevelRadius; }
+			set { if (BevelRadius != value) { buttonSchema.BevelRadius = value; UpdateVertsOnly(); } }
 		}
 
-		public float Depth { get { return buttonSchema.Depth; } }
-
-		public int WidthSegments { get { return buttonSchema.WidthVertCount; }
-			set
-			{
-				if (WidthSegments != value) { buttonSchema.WidthVertCount = value; RebuildMesh(); }
-			}
+		public float RimWidth { get { return buttonSchema.RimWidth; }
+			set { if (RimWidth != value) { buttonSchema.RimWidth = value; UpdateVertsOnly(); } }
 		}
 
-        public override void SetSchema(ControlSchema controlSchema)
+		public float RimDepth { get { return buttonSchema.RimDepth; }
+			set { if (RimDepth != value) { buttonSchema.RimDepth = value; UpdateVertsOnly(); } }
+		}
+		private void OnValidate()
+		{
+			buttonModel.SetNewButtonSchema(buttonSchema);
+		}
+
+		public override void SetSchema(ControlSchema controlSchema)
         {
             // set things based off the schema
             transform.localPosition = controlSchema.Position;
@@ -66,9 +89,11 @@ namespace Instrumental.Controls
 			buttonSchema = ButtonSchema.CreateFromControl(controlSchema);
         }
 
-        protected override void Awake()
+		protected override void Awake()
         {
             _name = "Button";
+
+			buttonRuntimeBehavior = GetComponent<ButtonRuntime>();
 
             base.Awake();
         }
@@ -101,7 +126,7 @@ namespace Instrumental.Controls
 
 		void UpdateVertsOnly()
 		{
-
+			
 		}
 		#endregion
 

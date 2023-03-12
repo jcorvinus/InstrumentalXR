@@ -44,28 +44,40 @@ namespace Instrumental.Schema
 		public bool HasRim;
 
 		// number of radius slices
+		[Range(MIN_CORNER_VERT_COUNT, MAX_CORNER_VERT_COUNT)]
 		public int CornerVertCount;
 
+		[Range(MIN_WIDTH_VERT_COUNT, MAX_WIDTH_VERT_COUNT)]
 		public int WidthVertCount;
 
+		[Range(MIN_BEVEL_SLICE_COUNT, MAX_BEVEL_SLICE_COUNT)]
 		public int BevelSliceCount;
 
 		// button mesh depth
+		[Range(MIN_EXTRUSION_DEPTH, MAX_EXTRUSION_DEPTH)]
 		public float Depth;
 
 		// button height
+		[Range(MIN_RADIUS, MAX_RADIUS)]
 		public float Radius;
 
 		// square or round?
 
 		// width
+		[Range(0, 0.1f)]
 		public float Width;
 
+		[Range(MIN_BEVEL_RADIUS_PERCENT, MAX_BEVEL_RADIUS_PERCENT)]
 		public float BevelRadius;
 
+		[Range(MIN_BEVEL_EXTRUSION_PERCENT, MAX_BEVEL_EXTRUSION_PERCENT)]
 		public float BevelDepth;
 
+		[Range(MIN_RIM_WIDTH_PERCENT, MAX_RIM_WIDTH_PERCENT)]
 		public float RimWidth;
+
+		[Range(MIN_RIM_DEPTH_PERCENT, MAX_RIM_DEPTH_PERCENT)]
+		public float RimDepth;
 
 		// button throw distance
 		public float ThrowDistance; // throw distance and height are good candidates
@@ -184,11 +196,16 @@ namespace Instrumental.Schema
 			return new ButtonSchema()
 			{
 				HasRim = true,
-				WidthVertCount = 4,
-				Radius = 0.02f,
-				CornerVertCount = 4,
-				ThrowDistance = 0.06f,
-				Width = 0.2f
+				CornerVertCount = 5, 
+				WidthVertCount = 0,
+				BevelSliceCount = 3,
+				Depth = 0.017f,
+				Radius = 0.022f,
+				Width = 0.0011f,
+				BevelRadius = 0.697f,
+				BevelDepth = 0.246f,
+				RimWidth = 0.106f,
+				RimDepth = 0.25f
 			};
 		}
 

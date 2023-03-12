@@ -1,12 +1,12 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-namespace VRKeyboard
+namespace Instrumental.Controls
 {
-	[RequireComponent(typeof(FingerButton))]
-	public class FingerButtonTest : MonoBehaviour
+	[RequireComponent(typeof(ButtonRuntime))]
+	public class ButtonRuntimeTest : MonoBehaviour
 	{
-		private FingerButton button;
+		private ButtonRuntime button;
 
 		[Header("Variables")]
 		public float ThrowValue;
@@ -19,7 +19,7 @@ namespace VRKeyboard
 		// Use this for initialization
 		void Awake()
 		{
-			button = GetComponent<FingerButton>();
+			button = GetComponent<ButtonRuntime>();
 		}
 
 		// Update is called once per frame
