@@ -67,8 +67,6 @@ namespace Instrumental.Controls
 		#endregion
 
 		#region Visual Variables
-		private Animator buttonAnimatorComponent;
-		public TweenMaterialColor HighlightTweener;
 		public Transform ButtonFace;
 		#endregion
 
@@ -87,7 +85,6 @@ namespace Instrumental.Controls
 		// Use this for initialization
 		void Awake()
 		{
-			buttonAnimatorComponent = GetComponentInChildren<Animator>();
 			boundsCollider = GetComponentInChildren<Collider>();
 		}
 
@@ -159,7 +156,7 @@ namespace Instrumental.Controls
 				}
 				else
 				{
-					if (furthestPushPoint >= ButtonThrowDistance)
+					if (furthestPushPoint <= ButtonThrowDistance)
 					{
 						WaitingForReactivation = false;
 						if (EnableDebugLogging) Debug.Log("Re-activation allowed.");
@@ -177,11 +174,11 @@ namespace Instrumental.Controls
 		{
 			if (isLeftInBounds || isRightInBounds)
 			{
-				ButtonFace.transform.localPosition = new Vector3(0, furthestPushPoint, 0);
+				ButtonFace.transform.localPosition = new Vector3(0, 0, furthestPushPoint);
 			}
 			else
 			{
-				ButtonFace.transform.localPosition = Vector3.Lerp(ButtonFace.transform.localPosition, Vector3.up * ButtonFaceDistance, Time.deltaTime * 5);
+				ButtonFace.transform.localPosition = Vector3.Lerp(ButtonFace.transform.localPosition, Vector3.zero, Time.deltaTime * 5);
 			}
 		}
 
@@ -196,11 +193,8 @@ namespace Instrumental.Controls
 
 		public void Hover()
 		{
-			buttonAnimatorComponent.SetTrigger("Highlight");
-
 			AudioSource.PlayClipAtPoint(hoverClip, transform.position);
 
-			HighlightTweener.enabled = true;
 			if (ButtonHovered != null) ButtonHovered(this);
 			if (EnableDebugLogging)
 			{
@@ -211,7 +205,6 @@ namespace Instrumental.Controls
 
 		public void CancelHover()
 		{
-			HighlightTweener.enabled = false;
 			if (ButtonHoverEnded != null) ButtonHoverEnded(this);
 			if (EnableDebugLogging) Debug.Log("FingerButton: " + name + " hover ended.");
 		}

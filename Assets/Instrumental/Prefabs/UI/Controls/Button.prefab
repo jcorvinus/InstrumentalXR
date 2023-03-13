@@ -152,6 +152,9 @@ MonoBehaviour:
     RimDepth: 0.25
     ThrowDistance: 0
   boxCollider: {fileID: 4518254474591825844}
+  buttonRuntimeBehavior: {fileID: 731302364273269603}
+  hoverHeight: 0.03
+  underFlow: 0.015
 --- !u!114 &2733170341325265294
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -279,15 +282,12 @@ MonoBehaviour:
   furthestPushPoint: 0
   fingerDots: []
   WaitingForReactivation: 0
-  ButtonFaceDistance: 0
-  ButtonThrowDistance: 0
+  ButtonFaceDistance: 0.021182
+  ButtonThrowDistance: 0.00425
   CurrentThrowValue: 0
   CanHighlight: 1
-  HighlightTweener: {fileID: 0}
-  ButtonFace: {fileID: 0}
-  HoverClip: {fileID: 0}
-  ActivateClip: {fileID: 0}
-  ThrowSource: {fileID: 0}
+  ButtonFace: {fileID: 2733170340574373408}
+  ThrowSource: {fileID: 7058533230328236962}
   VolumeModifier: 1
   EnableDebugLogging: 0
 --- !u!65 &4518254474591825844
@@ -301,8 +301,8 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Size: {x: 0.0451, y: 0.044, z: 0.066182}
+  m_Center: {x: 0, y: 0, z: 0.018091}
 --- !u!1 &2733170341957866590
 GameObject:
   m_ObjectHideFlags: 0

@@ -13,7 +13,10 @@ namespace Instrumental.Controls
 		[SerializeField] ButtonModel buttonModel;
 		[SerializeField] ButtonSchema buttonSchema = ButtonSchema.GetDefault();
 		[SerializeField] BoxCollider boxCollider;
-		ButtonRuntime buttonRuntimeBehavior;
+		[SerializeField] ButtonRuntime buttonRuntimeBehavior;
+
+		[SerializeField] float hoverHeight = 0.03f;
+		[SerializeField] float underFlow = 0.01f;
 
 		// accessors for schema variables
 		public bool HasRim { get { return buttonSchema.HasRim; }
@@ -77,6 +80,16 @@ namespace Instrumental.Controls
 		private void OnValidate()
 		{
 			buttonModel.SetNewButtonSchema(buttonSchema);
+
+			float physDepth = (buttonSchema.Depth + (buttonSchema.Depth * buttonSchema.BevelDepth));
+			float physAndHoverDepth = physDepth + (hoverHeight);
+			float totalDepth = physAndHoverDepth + underFlow;// + hoverHeight + underFlow;
+			boxCollider.center = new Vector3(0, 0, (physAndHoverDepth * 0.5f) - (underFlow * 0.5f));
+			boxCollider.size = new Vector3(buttonSchema.Width + (buttonSchema.Radius * 2), buttonSchema.Radius * 2,
+				totalDepth);
+
+			buttonRuntimeBehavior.ButtonFaceDistance = physDepth;
+			buttonRuntimeBehavior.ButtonThrowDistance = (buttonSchema.Depth * buttonSchema.RimDepth);
 		}
 
 		public override void SetSchema(ControlSchema controlSchema)

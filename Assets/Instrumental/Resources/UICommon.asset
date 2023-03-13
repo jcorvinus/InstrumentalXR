@@ -13,9 +13,12 @@ MonoBehaviour:
   m_Name: UICommon
   m_EditorClassIdentifier: 
   grabClip: {fileID: 8300000, guid: 3a6751af8abd10040bedc65e6b99a58a, type: 3}
-  itemPlaceClip: {fileID: 8300000, guid: f1c692e6c8df5de4f9f6f026c689bd99, type: 3}
+  itemPlaceClip: {fileID: 8300000, guid: 545fb8868e25d83419cf70b025f9f8d7, type: 3}
   errorClip: {fileID: 8300000, guid: 54d9287a6aa0c6744a4e33f7e336de92, type: 3}
-  alertClip: {fileID: 8300000, guid: 96392353aa5eebc4caebb5f039114aaf, type: 3}
+  alertClip: {fileID: 0}
+  hoverClip: {fileID: 8300000, guid: 41a53fc1c3ec28a4da16225da2cb841c, type: 3}
+  activateClip: {fileID: 8300000, guid: 0fc18ed9f5e47144fbae8d2d42c83b6a, type: 3}
+  deactivateClip: {fileID: 8300000, guid: 19f8ec0135d7f764bbb59a2d3b385dee, type: 3}
   masterGroup: {fileID: 24300002, guid: 68d340510be90ad4494a9f1947bcff61, type: 2}
   controlPrefabs:
   - Type: 1
