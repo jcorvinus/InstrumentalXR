@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+using Instrumental.Interaction;
+
 namespace Instrumental
 {
     public class HandFeedback : MonoBehaviour
@@ -15,6 +17,7 @@ namespace Instrumental
         float grabFadeDuration = 1f;
 
 		HandPenetration[] penetrators;
+		InstrumentalHand hand;
 		/*RigidHand rigidHand;
 		RigidFinger[] fingers;*/
 	
@@ -47,6 +50,9 @@ namespace Instrumental
         int intersectColorHash;
         Color currentColor;
 
+		private int leftFingertipHash;
+		private int rightFingertipHash;
+
 		// a bit of a hack but it'll prevent me from having to write tons of glue code
 		private static HandFeedback leftHandFeedback;
 		private static HandFeedback rightHandFeedback;
@@ -58,18 +64,22 @@ namespace Instrumental
 		{
 			/*rigidHand = GetComponent<RigidHand>();
 			fingers = GetComponentsInChildren<RigidFinger>(true);*/
+			hand = GetComponent<InstrumentalHand>();
+
+			leftFingertipHash = Shader.PropertyToID("_GlobalLeftFingertip");
+			rightFingertipHash = Shader.PropertyToID("_GlobalRightFingertip");
 
 			penetrators = transform.GetComponentsInChildren<HandPenetration>(true);
 
-			/*if (rigidHand.Handedness == Chirality.Left) leftHandFeedback = this;
-			else rightHandFeedback = this;*/
+			if (hand.Hand == Handedness.Left) leftHandFeedback = this;
+			else rightHandFeedback = this;
 		}
 
 		// Use this for initialization
 		void Start()
         {
             intersectColorHash = Shader.PropertyToID("_HighlightColor");
-            hoverIntersectColor = handMeshes[0].material.GetColor(intersectColorHash);
+            if((handMeshes != null && handMeshes.Length > 1)) hoverIntersectColor = handMeshes[0].material.GetColor(intersectColorHash);
             currentColor = staticIntersectColor;
 
 			oldFrequency = frequency;
@@ -140,23 +150,43 @@ namespace Instrumental
 			}
 		}
 
+		void SetGlobalShaderFingertips()
+		{
+			Vector3 centerPoint = (hand.GetAnchorPose(AnchorPoint.IndexTip).position +
+				(hand.GetAnchorPose(AnchorPoint.MiddleTip).position) * 0.5f);
+
+			if(hand.Hand == Handedness.Left)
+			{
+				Vector4 handGlowPoint = new Vector4(centerPoint.x, centerPoint.y, centerPoint.z);
+				Shader.SetGlobalVector(leftFingertipHash, handGlowPoint);
+			}
+			else
+			{
+				Vector4 handGlowPoint = new Vector4(centerPoint.x, centerPoint.y, centerPoint.z);
+				Shader.SetGlobalVector(rightFingertipHash, handGlowPoint);
+			}
+		}
+
         private void Update()
         {
-			foreach (Renderer handRenderer in handMeshes) SetHandRendererColors(handRenderer);
+			if (handMeshes != null && handMeshes.Length > 0)
+			{
+				foreach (Renderer handRenderer in handMeshes) SetHandRendererColors(handRenderer);
 
-            if (IsGraspingObject())
-            {
-                isGrabbingTime += Time.deltaTime;
-                isGrabbingTime = Mathf.Min(isGrabbingTime, grabFadeDuration);
-            }
-            else
-            {
-                isGrabbingTime -= Time.deltaTime;
-                isGrabbingTime = Mathf.Max(isGrabbingTime, 0);
-            }
+				if (IsGraspingObject())
+				{
+					isGrabbingTime += Time.deltaTime;
+					isGrabbingTime = Mathf.Min(isGrabbingTime, grabFadeDuration);
+				}
+				else
+				{
+					isGrabbingTime -= Time.deltaTime;
+					isGrabbingTime = Mathf.Max(isGrabbingTime, 0);
+				}
 
-            grabbedPreviousFrame = IsGraspingObject();
-        }
+				grabbedPreviousFrame = IsGraspingObject();
+			}
+		}
 
 		private void CalculatePenetrationHaptics(HandPenetration deepestPenetrator)
 		{
@@ -257,20 +287,23 @@ namespace Instrumental
 
         private void FixedUpdate()
         {
-			HandPenetration deepestPenetrator = GetDeepestPenetrator();
+			if (handMeshes != null && handMeshes.Length > 0) // swap this out with a physics check once the colliders are in
+			{
+				HandPenetration deepestPenetrator = GetDeepestPenetrator();
 
-            audioSource.volume = (deepestPenetrator.MaxPenetrationDepth * depthVolumeBoost) * (IsGraspingObject() ? 0 : 1);
-			if (Mathf.Approximately(audioSource.volume, 0) && audioSource.isPlaying) audioSource.Pause(); // don't waste CPU time playing nothing
-			else audioSource.UnPause();
+				audioSource.volume = (deepestPenetrator.MaxPenetrationDepth * depthVolumeBoost) * (IsGraspingObject() ? 0 : 1);
+				if (Mathf.Approximately(audioSource.volume, 0) && audioSource.isPlaying) audioSource.Pause(); // don't waste CPU time playing nothing
+				else audioSource.UnPause();
 
-			// move audiosource to center of all penetrating bodies
-			int penetratorCount = 0;
-			Vector3 penetratorCenter = GetPenetratorCenter(out penetratorCount);
+				// move audiosource to center of all penetrating bodies
+				int penetratorCount = 0;
+				Vector3 penetratorCenter = GetPenetratorCenter(out penetratorCount);
 
-            audioSource.transform.position = penetratorCenter;
+				audioSource.transform.position = penetratorCenter;
 
-			if (!overridePenetrationHaptics.GetValue()) CalculatePenetrationHaptics(penetratorCount > 0 ? deepestPenetrator : null);
-			if (doHaptics) HapticUpdate();
+				if (!overridePenetrationHaptics.GetValue()) CalculatePenetrationHaptics(penetratorCount > 0 ? deepestPenetrator : null);
+				if (doHaptics) HapticUpdate();
+			}
 		}
     }
 }

@@ -18,7 +18,7 @@ namespace Instrumental.Controls
 		[SerializeField] float hoverHeight = 0.03f;
 		[SerializeField] float underFlow = 0.01f;
 
-		// accessors for schema variables
+		#region Schema value accessors (Incomplete)
 		public bool HasRim { get { return buttonSchema.HasRim; }
 			set
 			{
@@ -77,6 +77,8 @@ namespace Instrumental.Controls
 		public float RimDepth { get { return buttonSchema.RimDepth; }
 			set { if (RimDepth != value) { buttonSchema.RimDepth = value; UpdateVertsOnly(); } }
 		}
+		#endregion
+
 		private void OnValidate()
 		{
 			buttonModel.SetNewButtonSchema(buttonSchema);

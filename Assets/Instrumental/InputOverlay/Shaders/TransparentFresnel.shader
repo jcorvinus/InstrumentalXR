@@ -1,4 +1,4 @@
-﻿Shader "Custom/TransparentFresnel" 
+﻿Shader "InstrumentalOverlay/TransparentFresnel" 
 {
     Properties 
     {

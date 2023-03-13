@@ -29,6 +29,7 @@ Shader "Instrumental/UIShader"
         [PerRendererData] _TouchAmount ("Touch Amount", Float) = 0
         [PerRendererData] _IsPressing ("IsPressing", Integer) = 0
         [PerRendererData] _IsGrasping ("IsGrasping", Integer) = 0
+        [PerRendererData] _UseDistanceGlow("Use Distance Glow", Integer) = 0
     }
     SubShader 
     {
@@ -40,10 +41,18 @@ Shader "Instrumental/UIShader"
 
         sampler2D _MainTex;
 
+        fixed4 _GlobalLeftFingertip;
+        fixed4 _GlobalRightFingertip;
+
+        float _TouchAmount;
+        int _IsPressing;
+        int _UseDistanceGlow;
+
         struct Input 
         {
             float2 uv_MainTex;
             float4 vertColor;
+            float3 worldPos;
         };
 
         void vert(inout appdata_full v, out Input o)
@@ -54,6 +63,10 @@ Shader "Instrumental/UIShader"
 
         void surf (Input IN, inout SurfaceOutput o) 
         {
+            float leftDistance = distance(_GlobalLeftFingertip, IN.worldPos);
+            float rightDistance = distance(_GlobalRightFingertip, IN.worldPos);
+            float lowestDistance = min(leftDistance, rightDistance);
+
             fixed4 c = tex2D(_MainTex, IN.uv_MainTex);
             o.Albedo = c.rgb * IN.vertColor;
             o.Alpha = c.a;
