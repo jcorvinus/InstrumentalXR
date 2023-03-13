@@ -148,12 +148,12 @@ MonoBehaviour:
     Width: 0.0011
     BevelRadius: 0.697
     BevelDepth: 0.246
-    RimWidth: 0.106
-    RimDepth: 0.25
+    RimWidth: 0.133
+    RimDepth: 0.382
     ThrowDistance: 0
   boxCollider: {fileID: 4518254474591825844}
   buttonRuntimeBehavior: {fileID: 731302364273269603}
-  hoverHeight: 0.03
+  hoverHeight: 0.055
   underFlow: 0.015
 --- !u!114 &2733170341325265294
 MonoBehaviour:
@@ -167,7 +167,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e22a0576bedd8d94fb4e8792b1125509, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  material: {fileID: 2100000, guid: 3ff150c1062c65c4a95db17fc8f97367, type: 2}
 --- !u!114 &2733170341325265288
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -283,7 +282,7 @@ MonoBehaviour:
   fingerDots: []
   WaitingForReactivation: 0
   ButtonFaceDistance: 0.021182
-  ButtonThrowDistance: 0.00425
+  ButtonThrowDistance: 0.0032470003
   CurrentThrowValue: 0
   CanHighlight: 1
   ButtonFace: {fileID: 2733170340574373408}
@@ -301,8 +300,8 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.0451, y: 0.044, z: 0.066182}
-  m_Center: {x: 0, y: 0, z: 0.018091}
+  m_Size: {x: 0.0451, y: 0.044, z: 0.091182}
+  m_Center: {x: 0, y: 0, z: 0.030591}
 --- !u!1 &2733170341957866590
 GameObject:
   m_ObjectHideFlags: 0

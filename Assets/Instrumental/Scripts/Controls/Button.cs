@@ -89,7 +89,7 @@ namespace Instrumental.Controls
 				totalDepth);
 
 			buttonRuntimeBehavior.ButtonFaceDistance = physDepth;
-			buttonRuntimeBehavior.ButtonThrowDistance = (buttonSchema.Depth * buttonSchema.RimDepth);
+			buttonRuntimeBehavior.ButtonThrowDistance = (buttonSchema.Depth * buttonSchema.RimDepth) * 0.5f; //(buttonSchema.Depth * buttonSchema.RimDepth);
 		}
 
 		public override void SetSchema(ControlSchema controlSchema)

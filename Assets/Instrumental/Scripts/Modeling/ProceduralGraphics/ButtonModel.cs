@@ -308,7 +308,7 @@ namespace Instrumental.Modeling.ProceduralGraphics
 				// triangulate our extrusions
 				rimOuterBridge.TriangulateBridge(ref rimTriangles, false);
 				rimOuterInnerBridge.TriangulateBridge(ref rimTriangles, false);
-				rimInnerBridge.TriangulateBridge(ref rimTriangles, false);
+				rimInnerBridge.TriangulateBridge(ref rimTriangles, true);
 				_rimMesh.vertices = rimVertices;
 				_rimMesh.triangles = rimTriangles;
 				_rimMesh.colors = rimColors;
@@ -404,7 +404,7 @@ namespace Instrumental.Modeling.ProceduralGraphics
 		void SetRimVertices()
 		{
 			float rimOuterRadius = radius + (radius * rimWidthPercentage);
-			float rimFrontDepth = (extrusionDepth * 0.5f);
+			float rimFrontDepth = (extrusionDepth * rimDepthPercentage);
 			LoopSide(ref rimVertices, rimOuterLoopBack.VertexBaseID, true, 0, rimOuterRadius);
 			LoopEdge(ref rimVertices, rimOuterLoopBack.VertexBaseID + (cornerVertCount * 2), true, 0, rimOuterRadius);
 			LoopSide(ref rimVertices, (rimOuterLoopBack.VertexBaseID + (cornerVertCount * 2)) + widthVertCount, false, 0, rimOuterRadius);

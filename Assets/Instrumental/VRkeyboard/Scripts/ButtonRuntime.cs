@@ -39,6 +39,8 @@ namespace Instrumental.Controls
 		public event ButtonEventHandler ButtonHoverEnded;
 		#endregion
 
+		Button button;
+
 		#region Fingertip Tracking Variables
 		[Header("Fingertip Tracking Variables")]
 		//public List<GameObject> FingertipsInCollisionBounds;
@@ -63,6 +65,14 @@ namespace Instrumental.Controls
 		public float ButtonThrowDistance;
 		public float CurrentThrowValue;
 
+		bool isTouching;
+		bool isHovering;
+		bool isPressed;
+
+		public bool IsTouching { get { return isTouching; } }
+		public bool IsHovering { get { return isHovering; } }
+		public bool IsPressed { get { return isPressed; } }
+
 		public bool CanHighlight = true;
 		#endregion
 
@@ -86,6 +96,7 @@ namespace Instrumental.Controls
 		void Awake()
 		{
 			boundsCollider = GetComponentInChildren<Collider>();
+			button = GetComponent<Button>();
 		}
 
 		private void Start()
@@ -115,16 +126,17 @@ namespace Instrumental.Controls
 			isLeftInBounds = leftHand != null && IsInBounds(GetTipPosition(leftHand));
 			isRightInBounds = rightHand != null && IsInBounds(GetTipPosition(rightHand));
 
-			bool newIsInBounds = isLeftInBounds || isRightInBounds;
+			bool isInBoundsThisFrame = isLeftInBounds || isRightInBounds;
 
-			if (newIsInBounds != oldIsInBounds)
+			if (isInBoundsThisFrame != oldIsInBounds)
 			{
-				if (newIsInBounds) Hover();
+				if (isInBoundsThisFrame) Hover();
 				else CancelHover();
 			}
 
-			// determine the furthest finger and see how 'far' we've pushed things.
-			if (newIsInBounds)
+			isHovering = isInBoundsThisFrame;
+
+			if (isInBoundsThisFrame)
 			{
 				furthestPushPoint = ButtonFaceDistance;
 
@@ -144,19 +156,22 @@ namespace Instrumental.Controls
 					if (furthestPushPoint > rightTipPosition.z) furthestPushPoint = rightTipPosition.z;
 				}
 
+				isTouching = furthestPushPoint < ButtonFaceDistance;
+
 				if (!WaitingForReactivation)
 				{
 					CurrentThrowValue = Mathf.InverseLerp(ButtonThrowDistance, ButtonFaceDistance, furthestPushPoint);
 					ThrowSource.volume = Mathf.Lerp(0f, 1f, MathSupplement.UnitReciprocal(CurrentThrowValue) * VolumeModifier);
 					ThrowSource.pitch = Mathf.Lerp(1f, 1.84f, MathSupplement.UnitReciprocal(CurrentThrowValue));
 					if (furthestPushPoint < ButtonThrowDistance)
-					{
+					{ 
 						Activate();
+						isPressed = true;
 					}
 				}
 				else
 				{
-					if (furthestPushPoint <= ButtonThrowDistance)
+					if (furthestPushPoint >= ButtonThrowDistance)
 					{
 						WaitingForReactivation = false;
 						if (EnableDebugLogging) Debug.Log("Re-activation allowed.");
@@ -165,19 +180,25 @@ namespace Instrumental.Controls
 			}
 			else
 			{
+				isTouching = false;
+				isPressed = false;
+				isHovering = false;
 				ThrowSource.volume = 0;
 				ThrowSource.pitch = 1;
 			}
-		}
 
-		void LateUpdate()
-		{
-			if (isLeftInBounds || isRightInBounds)
+			if (isTouching)
 			{
-				ButtonFace.transform.localPosition = new Vector3(0, 0, furthestPushPoint);
+				float pushBackDistance = -(ButtonFaceDistance - furthestPushPoint);
+				float minValue = button.Depth - (ButtonThrowDistance * 0.25f);
+				// need to constrain the amount this can be pushed in by.
+				ButtonFace.transform.localPosition = new Vector3(0, 0, //Mathf.Max(pushBackDistance, -ButtonThrowDistance)
+					Mathf.Max(pushBackDistance, -minValue)); // I think I need to take the button's total
+																		// physical depth into account here.
 			}
 			else
 			{
+				// can we spring this back into position? With overshoot?
 				ButtonFace.transform.localPosition = Vector3.Lerp(ButtonFace.transform.localPosition, Vector3.zero, Time.deltaTime * 5);
 			}
 		}
@@ -195,6 +216,8 @@ namespace Instrumental.Controls
 		{
 			AudioSource.PlayClipAtPoint(hoverClip, transform.position);
 
+			isHovering = true;
+
 			if (ButtonHovered != null) ButtonHovered(this);
 			if (EnableDebugLogging)
 			{
@@ -205,6 +228,7 @@ namespace Instrumental.Controls
 
 		public void CancelHover()
 		{
+			isHovering = false;
 			if (ButtonHoverEnded != null) ButtonHoverEnded(this);
 			if (EnableDebugLogging) Debug.Log("FingerButton: " + name + " hover ended.");
 		}
