@@ -157,16 +157,16 @@ namespace Instrumental.Controls
 				}
 
 				isTouching = furthestPushPoint < ButtonFaceDistance;
+				isPressed = (furthestPushPoint < ButtonThrowDistance);
 
 				if (!WaitingForReactivation)
 				{
 					CurrentThrowValue = Mathf.InverseLerp(ButtonThrowDistance, ButtonFaceDistance, furthestPushPoint);
-					ThrowSource.volume = Mathf.Lerp(0f, 1f, MathSupplement.UnitReciprocal(CurrentThrowValue) * VolumeModifier);
-					ThrowSource.pitch = Mathf.Lerp(1f, 1.84f, MathSupplement.UnitReciprocal(CurrentThrowValue));
+					ThrowSource.volume = Mathf.Lerp(0f, 1f, 1 - CurrentThrowValue * VolumeModifier);
+					ThrowSource.pitch = Mathf.Lerp(1f, 1.84f, 1 - CurrentThrowValue); // used to be MathSupplement.UnitReciprocal
 					if (furthestPushPoint < ButtonThrowDistance)
 					{ 
 						Activate();
-						isPressed = true;
 					}
 				}
 				else

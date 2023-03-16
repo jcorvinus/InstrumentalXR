@@ -50,15 +50,21 @@ namespace Instrumental
         int intersectColorHash;
         Color currentColor;
 
-		private int leftFingertipHash;
-		private int rightFingertipHash;
-
 		// a bit of a hack but it'll prevent me from having to write tons of glue code
 		private static HandFeedback leftHandFeedback;
 		private static HandFeedback rightHandFeedback;
 
 		public static HandFeedback LeftHand { get { return leftHandFeedback; } }
-		public static HandFeedback RightHand { get { return rightHandFeedback; } }		
+		public static HandFeedback RightHand { get { return rightHandFeedback; } }
+
+		// UI fingertip glow stuff:
+		[Range(0, 0.2f)]
+		[SerializeField] float fingerUIDistanceGlow = 0.12f;
+		private int leftFingertipHash;
+		private int rightFingertipHash;
+		private int fingerGlowDistanceHash;
+		Vector3 leftGlowPoint;
+		Vector3 rightGlowPoint;
 
 		private void Awake()
 		{
@@ -68,6 +74,7 @@ namespace Instrumental
 
 			leftFingertipHash = Shader.PropertyToID("_GlobalLeftFingertip");
 			rightFingertipHash = Shader.PropertyToID("_GlobalRightFingertip");
+			fingerGlowDistanceHash = Shader.PropertyToID("_HandGlowMaxDistance");
 
 			penetrators = transform.GetComponentsInChildren<HandPenetration>(true);
 
@@ -152,19 +159,25 @@ namespace Instrumental
 
 		void SetGlobalShaderFingertips()
 		{
-			Vector3 centerPoint = (hand.GetAnchorPose(AnchorPoint.IndexTip).position +
-				(hand.GetAnchorPose(AnchorPoint.MiddleTip).position) * 0.5f);
+			//Vector3 centerPoint = ((hand.GetAnchorPose(AnchorPoint.IndexTip).position +
+			//	(hand.GetAnchorPose(AnchorPoint.MiddleTip).position)) * 0.5f);
 
-			if(hand.Hand == Handedness.Left)
+			Vector3 centerPoint = hand.GetAnchorPose(AnchorPoint.IndexTip).position;
+
+			if (hand.Hand == Handedness.Left)
 			{
+				leftGlowPoint = centerPoint;
 				Vector4 handGlowPoint = new Vector4(centerPoint.x, centerPoint.y, centerPoint.z);
 				Shader.SetGlobalVector(leftFingertipHash, handGlowPoint);
 			}
 			else
 			{
+				rightGlowPoint = centerPoint;
 				Vector4 handGlowPoint = new Vector4(centerPoint.x, centerPoint.y, centerPoint.z);
 				Shader.SetGlobalVector(rightFingertipHash, handGlowPoint);
 			}
+
+			Shader.SetGlobalFloat(fingerGlowDistanceHash, fingerUIDistanceGlow);
 		}
 
         private void Update()
@@ -186,6 +199,8 @@ namespace Instrumental
 
 				grabbedPreviousFrame = IsGraspingObject();
 			}
+
+			SetGlobalShaderFingertips();
 		}
 
 		private void CalculatePenetrationHaptics(HandPenetration deepestPenetrator)
@@ -305,5 +320,20 @@ namespace Instrumental
 				if (doHaptics) HapticUpdate();
 			}
 		}
-    }
+
+		private void OnDrawGizmos()
+		{
+			if (Application.isPlaying)
+			{
+				if (hand.Hand == Handedness.Left)
+				{
+					Gizmos.DrawWireSphere(leftGlowPoint, fingerUIDistanceGlow);
+				}
+				else
+				{
+					Gizmos.DrawWireSphere(rightGlowPoint, fingerUIDistanceGlow);
+				}
+			}
+		}
+	}
 }

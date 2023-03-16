@@ -77,6 +77,8 @@ namespace Instrumental.Controls
 		public float RimDepth { get { return buttonSchema.RimDepth; }
 			set { if (RimDepth != value) { buttonSchema.RimDepth = value; UpdateVertsOnly(); } }
 		}
+
+		public float HoverHeight { get { return hoverHeight; } }
 		#endregion
 
 		private void OnValidate()
