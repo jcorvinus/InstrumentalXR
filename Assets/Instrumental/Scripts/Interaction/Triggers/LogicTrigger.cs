@@ -34,7 +34,7 @@ namespace Instrumental.Interaction.Triggers
 
                     for(int i=0; i < triggers.Length; i++)
 					{
-                        if (triggers[i].IsActive)
+                        if (!triggers[i].IsActive)
                         {
                             value = false;
                             break;

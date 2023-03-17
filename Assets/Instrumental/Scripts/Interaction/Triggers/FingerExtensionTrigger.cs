@@ -88,14 +88,42 @@ namespace Instrumental.Interaction.Triggers
 				float ringDot = Vector3.Dot(ringForward, palmDirection);
 				float pinkyDot = Vector3.Dot(pinkyForward, palmDirection);
 
-				indexPasses = indexDot > dotCutoff;
-				middlePasses = middleDot > dotCutoff;
-				ringPasses = ringDot > dotCutoff;
-				pinkyPasses = pinkyDot > dotCutoff;
-				thumbPasses = thumbDot > thumbDotCutoff; // it does look like the thumb is not extended when it's lower than 0.4 to 0.2 or so
+				bool indexDotThreshold = (indexDot > dotCutoff);
+				bool middleDotThreshold = (middleDot > dotCutoff);
+				bool ringDotThreshold = (ringDot > dotCutoff);
+				bool pinkyDotThreshold = (pinkyDot > dotCutoff);
+				bool thumbDotThreshold = (thumbDot > thumbDotCutoff); // it does look like the thumb is not extended when it's lower than 0.4 to 0.2 or so
+
+				thumbPasses = ValuePasses(thumbDotThreshold, thumbExtension);
+				indexPasses = ValuePasses(indexDotThreshold, indexExtension);
+				middlePasses = ValuePasses(middleDotThreshold, middleExtension);
+				ringPasses = ValuePasses(ringDotThreshold, ringExtension);
+				pinkyPasses = ValuePasses(pinkyDotThreshold, pinkyExtension);
+
+				if (thumbPasses && indexPasses && middlePasses && ringPasses && pinkyPasses)
+				{
+					Activate();
+				}
+				else Deactivate();
 			}
 			else GetHand();
         }
+
+		bool ValuePasses(bool input, ExtensionState extensionState)
+		{
+			bool passes = false;
+			if (indexExtension == ExtensionState.Extended)
+			{
+				passes = input;
+			}
+			else if (indexExtension == ExtensionState.Unextended)
+			{
+				passes = !input;
+			}
+			else passes = true;
+
+			return passes;
+		}
 
 		void DrawFingerState(bool passes, AnchorPoint anchorPoint)
 		{
