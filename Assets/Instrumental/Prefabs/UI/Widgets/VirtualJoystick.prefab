@@ -11,6 +11,9 @@ GameObject:
   - component: {fileID: 3520004264816891076}
   - component: {fileID: 3520004264816891099}
   - component: {fileID: 3520004264816891098}
+  - component: {fileID: 3520004264820536982}
+  - component: {fileID: 3520004264820536987}
+  - component: {fileID: 3520004264820536983}
   m_Layer: 0
   m_Name: VirtualJoystick
   m_TagString: Untagged
@@ -67,7 +70,53 @@ MonoBehaviour:
   - {fileID: 0}
   inactiveColor: {r: 0.2784314, g: 0.2784314, b: 0.2784314, a: 1}
   activeColor: {r: 0.2830189, g: 0, b: 0, a: 1}
-  trigger: {fileID: 3520004264816891099}
+  trigger: {fileID: 3520004264820536987}
+--- !u!114 &3520004264820536982
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3520004264816891097}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 877f5bda6e3e2314bbfbef437f26c748, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  handedness: 1
+  thumbExtension: 1
+  indexExtension: 1
+  middleExtension: 1
+  ringExtension: 1
+  pinkyExtension: 1
+--- !u!114 &3520004264820536987
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3520004264816891097}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 730e84cce8dc0524497f6fa05840fbe0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mode: 0
+  triggers:
+  - {fileID: 3520004264816891099}
+  - {fileID: 3520004264820536982}
+--- !u!114 &3520004264820536983
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3520004264816891097}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 04ff44d5f0ccb5f4c8d53804c71a79b0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &7910505037765189621
 PrefabInstance:
   m_ObjectHideFlags: 0

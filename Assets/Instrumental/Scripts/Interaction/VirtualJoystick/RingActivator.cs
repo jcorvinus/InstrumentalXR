@@ -54,8 +54,8 @@ namespace Instrumental.Interaction.VirtualJoystick
 		private void OnDisable()
 		{
             enabledTime = 0;
-            innerRing.enabled = false;
-            outerRing.enabled = false;
+            if(innerRing) innerRing.enabled = false;
+            if(outerRing) outerRing.enabled = false;
 		}
 
 		// Update is called once per frame
