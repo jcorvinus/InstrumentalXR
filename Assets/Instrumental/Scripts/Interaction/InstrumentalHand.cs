@@ -15,7 +15,9 @@ namespace Instrumental.Interaction
         Palm=1,
 		ThumbTip=2,
         IndexTip=3,
-        MiddleTip=4
+        MiddleTip=4,
+		RingTip=5,
+		PinkyTip=6
     }
 
 	public class InstrumentalHand : MonoBehaviour
@@ -105,6 +107,14 @@ namespace Instrumental.Interaction
 
 				case AnchorPoint.ThumbTip:
 					transform = dataHand.thumbTip;
+					break;
+
+				case AnchorPoint.RingTip:
+					transform = dataHand.ringTip;
+					break;
+
+				case AnchorPoint.PinkyTip:
+					transform = dataHand.pinkyTip;
 					break;
 
 				default:

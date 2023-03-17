@@ -92,34 +92,16 @@ Material property block data for:
 - Also the ability to do cubemaps for shiny stuff
 
 -----------------------------------
-Button interaction:
-I've got a bit of a problem. I've got the old fingerbutton class, and that's all well and good and all. But do I really want to have 'button' and 'fingerbutton' as separate classes? It kinda makes sense - we can instantiate and config FingerButton at runtime if we're in runtime mode, and leave it out if we're in design mode. Would still be nice to have the collider, but meh duplicating the collider generation isn't that big of a deal. I guess I didn't really think through having design time and runtime live along side eachother very much during the intial phase, figured I'd just yolo it. And fingerbutton? What if we've got other button pressing activation interactions? What about foot pressing? Eye pressing (weird but not impossible, esp with multimodal. What about distance pressing?) Not a pressing matter for right now (lololol)
+Working on the finger glow stuff and have run into a bit of a problem: I have the feedback hands providing a position to the gloabl shader vectors, but have noticed a problem: they appear to be in the wrong place, very far away. Not sure what's up with that. Hmm. My code does try to do some funny stuff, like average the positions together. Oh I think I know what's up. Parentheses problem, bad math.
 
-If we did do the generic thing, we could split it up like this:
-store a list of button pressor positions
-These can be vector3s. xy for 2d position, and z for normalized depth
-We can have standard behavior for fully 3d pressors - fingers, feet, whatever.
-For pseudo 3d pressors like gaze dots, we can handle the xy like normal, but map the depth amount to a separate value, like a pinch amount for a remote pinch raycast, 
+Yep fixed that. I have a new problem now: it looks like my throw values go in the opposite value: 1 being unpressed and 0 being pressed. Need to see if that's intentional but it would certainly be screwing with things.
 
-Looking at how UIControl is currently setup. I wonder if we can set up proper handling for the difference between design time behavior, palette behavior, and runtime behavior. It's already an abstract class, but I wonder if we can have abstract handlers or something? idk the hacky way right now seems to be to have separate components for each mode. It looks like all UIControls look for a panel in their parent transform heirarchy. Notable in that we don't have any existing examples of this except the Panel object in the editing studio - the one that is the target of edit mode. Looks like Panel is always set to isDesignerMode, which is definitely a limitation. I had clearly originally made it so that only this editor could author panels and controls. Blegh, this had only been set up for the old way.
+moving on to detectors:
+looks like the palm direction is wrong -0 it's doing forward when we really want to do up. Flipping might need to get taken into account, not sure. Also the dot product is not working the way I expected.
 
-I wonder if I can make it so that schema are scriptable objects. Would be nice to have json serialization/deserialization as well. Scriptable objects would mean we can make individual elements without needing the whole editor suite working (it will be awhile before that thing works properly again tbh desu). Oh, the root uischema data is already a scriptable object. I should honestly just convert the rest of them and call it a day - there seem to be tools for handling serialization/deserialzation as json too. I've got the old project as reference for anything that gets blown away. Nice, I think this will work!
+Doing some stuff on the virtual joystick interaction. Uh that was cool I guess lol forgot to take notes.
 
-Interesting that uischema would have the ability to hold controls with no panel. Makes sense I guess? If we wanted to have free-floating controls. Makes me wonder if that was the intention or if things were just not thought through very well. I can see it being useful though, so I might keep it.
-
-I'm looking at UICommonElements, which is where we'd normally store all of our prefabs for spawning. There does seem to be one problem though: unity serialization doesn't like dictionaries. We can probably just turn this into an array and call it a day nbd.
-
-Hmm. Need to think about the collider situation. For perfectly round buttons it's fine to have a capsule collider as the trigger region, but as soon as the button can go wide, no such collider is acceptable. I suppose it'd be possible to have 3 colliders, 2 capsules and a connecting box but that feels weird - we'd have to write pretty hacky 'in region' code. I suppose we could do a convex mesh collider but eh, performance and runtime updating. Don't like it. We'd also be giving up our ability to start the hover on trigger enter. Guess I'll just do box colliders for both.
-
-Looking at the buttonmodel class, we'll need to supply accessors so that the owning class (button) can send it proper updates based off of schema data. Oh hmm it looks like methods are used instead of accessor fields. Not a huge difference tbh. Interesting though that we provide const float constraints. One thing that does kind of suck though is that in the editor for design at least, it's a good idea to be able to have something where we can set sliders and have them automatically update the visual representation. Maybe this means writing a custom editor for the schema itself, although our lack of inheritance means we can't exactly expose all the right options. We'll also need to start looking into instancing here.
-
-I just realized that with the right editors I can make dealing with controls and schema easier. Have a reference to the schema asset (will want to make button schema and other sub-classes into scriptable objects too), then have a serializedobject inspector that can edit them in-situ, so we don't have to click out to the asset to modify. Changes can be detected and propagated to the control, even at edit time. Also, thinking about changing how the generation is done a bit. One thing I'm a bit worried about is the inability to test things discretely - for now I can test a buttonmodel script by itself, but what if I change the generation? I'm also a bit worried about having the mesh re-generation. Hmm, actually idk what we even do wit hthe properties changed method, but it would probably be a good idea to make a batch property changing method so we can avoid re-generating everything. maybe change OnValidate's behavior if in play mode?
-
-OK, starting to think about the best way forward here - I think what I can do is I can have PropertiesChanged offer up both a new and old buttonSchema. We can compare the two each time there's an update so we know exactly what changed.
-
-I should really improve these sfx sometime. I've deleted the ones that really shouldn't be in there and added some replacements.
-
-I think this version of TweenMaterialColor is old, so I might need to update it a bit to support material property blocks. Will get to that at some point though. I'm tempted to break out the visual parts a bit more, idk. How does 'buttonruntimevisual' sound? Or maybe ButtonUnityGraphic can have Runtime checking in its Update() method?
+Back to working on triggers though and it looks like I might want to refactor some stuff - palmdirectiontrigger looks like it's going to have some stuff in common with finger extension trigger, so perhaps I can use inheritance there to avoid code duplication yeye
 
 ------------------------------------
 Solving the 'tightly packed gizmos' issue:

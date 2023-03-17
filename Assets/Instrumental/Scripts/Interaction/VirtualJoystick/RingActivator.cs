@@ -45,6 +45,8 @@ namespace Instrumental.Interaction.VirtualJoystick
 
 		private void OnEnable()
 		{
+            outerRing.enabled = true;
+            outerRing.transform.localScale = Vector3.zero;
             innerRing.enabled = true;
             innerRing.transform.localScale = Vector3.zero;
 		}
@@ -53,6 +55,7 @@ namespace Instrumental.Interaction.VirtualJoystick
 		{
             enabledTime = 0;
             innerRing.enabled = false;
+            outerRing.enabled = false;
 		}
 
 		// Update is called once per frame
