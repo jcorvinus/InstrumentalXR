@@ -35,15 +35,10 @@ namespace Instrumental.Interaction.Triggers
 			
 		const float lineDist=0.05f;
 
-		Vector3 palmDirection;
-		Vector3 palmThumbRef;
-
 		void GetHand()
 		{
 			if (handedness == Handedness.Left) hand = InstrumentalHand.LeftHand;
 			else if (handedness == Handedness.Right) hand = InstrumentalHand.RightHand;
-
-			//if (hand) head = hand.transform.parent;
 		}
 
 		// Start is called before the first frame update
@@ -57,48 +52,11 @@ namespace Instrumental.Interaction.Triggers
         {
 			if (hand)
 			{
-				// get the palm direction
-				Pose palmPose = hand.GetAnchorPose(AnchorPoint.Palm);
-				palmDirection = palmPose.rotation * Vector3.up;
-				palmThumbRef = palmPose.rotation * Vector3.right;
-
-				// do dot products
-				// remember to try coming up with a continuous value
-				// for signification
-				// just like I mentioned in the docs
-
-				// thumb dot product might need to be different, not sure.
-
-				// index dot product
-				Pose thumbPose = hand.GetAnchorPose(AnchorPoint.ThumbTip);
-				Pose indexPose = hand.GetAnchorPose(AnchorPoint.IndexTip);
-				Pose middlePose = hand.GetAnchorPose(AnchorPoint.MiddleTip);
-				Pose ringPose = hand.GetAnchorPose(AnchorPoint.RingTip);
-				Pose pinkyPose = hand.GetAnchorPose(AnchorPoint.PinkyTip);
-
-				Vector2 thumbForward = thumbPose.rotation * Vector3.forward;
-				Vector3 indexForward = indexPose.rotation * Vector3.forward;
-				Vector3 middleForward = middlePose.rotation * Vector3.forward;
-				Vector3 ringForward = ringPose.rotation * Vector3.forward;
-				Vector3 pinkyForward = pinkyPose.rotation * Vector3.forward;
-
-				float thumbDot = Vector3.Dot(thumbForward, palmDirection);
-				float indexDot = Vector3.Dot(indexForward, palmDirection);
-				float middleDot = Vector3.Dot(middleForward, palmDirection);
-				float ringDot = Vector3.Dot(ringForward, palmDirection);
-				float pinkyDot = Vector3.Dot(pinkyForward, palmDirection);
-
-				bool indexDotThreshold = (indexDot > dotCutoff);
-				bool middleDotThreshold = (middleDot > dotCutoff);
-				bool ringDotThreshold = (ringDot > dotCutoff);
-				bool pinkyDotThreshold = (pinkyDot > dotCutoff);
-				bool thumbDotThreshold = (thumbDot > thumbDotCutoff); // it does look like the thumb is not extended when it's lower than 0.4 to 0.2 or so
-
-				thumbPasses = ValuePasses(thumbDotThreshold, thumbExtension);
-				indexPasses = ValuePasses(indexDotThreshold, indexExtension);
-				middlePasses = ValuePasses(middleDotThreshold, middleExtension);
-				ringPasses = ValuePasses(ringDotThreshold, ringExtension);
-				pinkyPasses = ValuePasses(pinkyDotThreshold, pinkyExtension);
+				thumbPasses = ValuePasses(hand.ThumbIsExtended, thumbExtension);
+				indexPasses = ValuePasses(hand.IndexIsExtended, indexExtension);
+				middlePasses = ValuePasses(hand.MiddleIsExtended, middleExtension);
+				ringPasses = ValuePasses(hand.RingIsExtended, ringExtension);
+				pinkyPasses = ValuePasses(hand.PinkyIsExtended, pinkyExtension);
 
 				if (thumbPasses && indexPasses && middlePasses && ringPasses && pinkyPasses)
 				{
@@ -140,6 +98,9 @@ namespace Instrumental.Interaction.Triggers
 			if(hand)
 			{
 				Pose palmPose = hand.GetAnchorPose(AnchorPoint.Palm);
+
+				Vector3 palmDirection = palmPose.rotation * Vector3.up;
+				Vector3 palmThumbRef = palmPose.rotation * Vector3.right;
 				Gizmos.color = Color.yellow;
 				Gizmos.DrawLine(palmPose.position, palmPose.position + (palmDirection * lineDist));
 				Gizmos.color = Color.magenta;

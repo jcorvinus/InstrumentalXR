@@ -33,6 +33,42 @@ namespace Instrumental.Interaction
 		const float palmUpOffset = 0.06f;
 		const float palmRightOffset = 0.0074f;
 
+		Pose palmPose;
+		Pose thumbPose;
+		Pose indexPose;
+		Pose middlePose;
+		Pose ringPose;
+		Pose pinkyPose;
+
+		bool thumbIsExtended = false;
+		bool indexIsExtended = false;
+		bool middleIsExtended = false;
+		bool ringIsExtended = false;
+		bool pinkyIsExtended = false;
+
+		[SerializeField] float thumbCurl = 0;
+		[SerializeField] float indexCurl = 0;
+		[SerializeField] float middleCurl = 0;
+		[SerializeField] float ringCurl = 0;
+		[SerializeField] float pinkyCurl = 0;
+
+		public bool ThumbIsExtended { get { return thumbIsExtended; } }
+		public bool IndexIsExtended { get { return indexIsExtended; } }
+		public bool MiddleIsExtended { get { return middleIsExtended; } }
+		public bool RingIsExtended { get { return ringIsExtended; } }
+		public bool PinkyIsExtended { get { return pinkyIsExtended; } }
+
+		public float ThumbCurl { get { return thumbCurl; } }
+		public float IndexCurl { get { return indexCurl; } }
+		public float MiddleCurl { get { return middleCurl; } }
+
+		public float RingCurl { get { return ringCurl; } }
+
+		public float PinkyCurl { get { return pinkyCurl; } }
+
+		const float dotCutoff = 0.45f;
+		const float thumbDotCutoff = 0.31f;
+
 		private static InstrumentalHand leftHand;
 		private static InstrumentalHand rightHand;
 
@@ -65,10 +101,71 @@ namespace Instrumental.Interaction
 
         }
 
+		void GetAnchorPoses()
+		{
+			palmPose = GetAnchorPose(AnchorPoint.Palm);
+			thumbPose = GetAnchorPose(AnchorPoint.ThumbTip);
+			indexPose = GetAnchorPose(AnchorPoint.IndexTip);
+			middlePose = GetAnchorPose(AnchorPoint.MiddleTip);
+			ringPose = GetAnchorPose(AnchorPoint.RingTip);
+			pinkyPose = GetAnchorPose(AnchorPoint.PinkyTip);
+		}
+
+		float GetFingerAngle(Vector3 baseDirection,
+			Vector3 forward, Vector3 axis)
+		{
+			float signedAngle = Vector3.SignedAngle(baseDirection, forward, axis);
+
+			if (signedAngle < 0 && signedAngle > -30) signedAngle = 0;
+			else if (signedAngle < 0 /*&& signedAngle > -130*/)
+			{
+				float absExtra = Mathf.Abs(signedAngle);
+				signedAngle = 180 + absExtra;
+			}
+
+			return Mathf.Clamp(signedAngle, 0, 340);
+		}
+
+		float GetFingerCurl(float angle)
+		{
+			return angle / 340;
+		}
+
+		void CalculateExtension()
+		{
+			Vector3 palmDirection = palmPose.rotation * Vector3.up;
+			Vector3 palmThumbRef = palmPose.rotation * Vector3.right;
+
+			Vector2 thumbForward = thumbPose.rotation * Vector3.forward;
+			Vector3 indexForward = indexPose.rotation * Vector3.forward;
+			Vector3 middleForward = middlePose.rotation * Vector3.forward;
+			Vector3 ringForward = ringPose.rotation * Vector3.forward;
+			Vector3 pinkyForward = pinkyPose.rotation * Vector3.forward;
+
+			float thumbDot = Vector3.Dot(thumbForward, palmDirection);
+			float indexDot = Vector3.Dot(indexForward, palmDirection);
+			float middleDot = Vector3.Dot(middleForward, palmDirection);
+			float ringDot = Vector3.Dot(ringForward, palmDirection);
+			float pinkyDot = Vector3.Dot(pinkyForward, palmDirection);
+
+			thumbCurl = GetFingerCurl(GetFingerAngle(palmDirection, thumbForward, palmThumbRef));
+			indexCurl = GetFingerCurl(GetFingerAngle(palmDirection, indexForward, palmThumbRef));
+			middleCurl = GetFingerCurl(GetFingerAngle(palmDirection, middleForward, palmThumbRef));
+			ringCurl = GetFingerCurl(GetFingerAngle(palmDirection, ringForward, palmThumbRef));
+			pinkyCurl = GetFingerCurl(GetFingerAngle(palmDirection, pinkyForward, palmThumbRef));
+
+			indexIsExtended = (indexDot > dotCutoff);
+			middleIsExtended = (middleDot > dotCutoff);
+			ringIsExtended = (ringDot > dotCutoff);
+			pinkyIsExtended = (pinkyDot > dotCutoff);
+			thumbIsExtended = (thumbDot > thumbDotCutoff); // it does look like the thumb is not extended when it's lower than 0.4 to 0.2 or so
+		}
+
         // Update is called once per frame
         void Update()
         {
-
+			GetAnchorPoses();
+			CalculateExtension();
         }
 
         public Pose GetAnchorPose(AnchorPoint anchorPoint)
