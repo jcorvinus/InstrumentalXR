@@ -22,6 +22,9 @@ namespace Instrumental.Interaction.VirtualJoystick
         float innerRingTimeOffset = 0.05f;
         float enabledTime = 0;
 
+        [Range(0,1f)]
+        [SerializeField] float scale = 1f;
+
         // components
         [SerializeField] MeshRenderer innerRing;
         [SerializeField] MeshRenderer outerRing;
@@ -76,10 +79,10 @@ namespace Instrumental.Interaction.VirtualJoystick
                 float innerTValue = Mathf.InverseLerp(innerRingTimeOffset, introAnimDuration, enabledTime);
 
                 outerRing.transform.position = transform.TransformPoint(Vector3.Lerp(Vector3.zero, outerRingPoint, outerTValue));
-                outerRing.transform.localScale = Vector3.Lerp(Vector3.zero, Vector3.one, scaleCurve.Evaluate(outerTValue));
+                outerRing.transform.localScale = Vector3.Lerp(Vector3.zero, Vector3.one * scale, scaleCurve.Evaluate(outerTValue));
 
                 innerRing.transform.position = transform.position + Vector3.Lerp(Vector3.zero, innerRingPoint, innerTValue);
-                innerRing.transform.localScale = Vector3.Lerp(Vector3.zero, Vector3.one, scaleCurve.Evaluate(outerTValue));
+                innerRing.transform.localScale = Vector3.Lerp(Vector3.zero, Vector3.one * scale, scaleCurve.Evaluate(outerTValue));
                 outerTarget.transform.SetPositionAndRotation(innerRing.transform.position, innerRing.transform.rotation);
             }
             else

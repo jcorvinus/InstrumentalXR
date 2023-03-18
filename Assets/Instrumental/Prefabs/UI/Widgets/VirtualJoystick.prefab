@@ -51,8 +51,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   handedness: 1
   directionToCheck: 0
-  angle: 25
-  measuredAngle: 0
+  entryAngle: 37.5
+  exitAngle: 47.5
+  DrawLength: 0.2
 --- !u!114 &3520004264816891098
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -60,7 +61,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3520004264816891097}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6bf21b4a3d6d89847b9c73e05650f24e, type: 3}
   m_Name: 
@@ -124,6 +125,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 3520004264816891076}
     m_Modifications:
+    - target: {fileID: 1508786188466796580, guid: c8458da08c018f54bae1c25698a3cc5a,
+        type: 3}
+      propertyPath: scale
+      value: 0.73
+      objectReference: {fileID: 0}
     - target: {fileID: 5899498360962766449, guid: c8458da08c018f54bae1c25698a3cc5a,
         type: 3}
       propertyPath: m_Name

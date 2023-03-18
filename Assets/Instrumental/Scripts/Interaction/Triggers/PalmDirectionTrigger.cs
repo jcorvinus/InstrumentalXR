@@ -23,9 +23,12 @@ namespace Instrumental.Interaction.Triggers
 
         [SerializeField] DirectionToCheck directionToCheck;
         [Range(0, 90)]
-        [SerializeField] float angle = 25;
+        public float entryAngle = 25;
 
-        [SerializeField] float measuredAngle;
+        [Range(0,90)]
+        public float exitAngle = 35;
+
+        float measuredAngle;
 
         Vector3 comparisonDirection;
         Vector3 palmDirection;
@@ -75,24 +78,57 @@ namespace Instrumental.Interaction.Triggers
                     measuredAngle = -1;
 				}
 
-                if (measuredAngle >= 0 && measuredAngle < angle)
-                {
-                    Activate();
-                }
-                else Deactivate();
+                if(!IsActive)
+				{
+                    if (measuredAngle >= 0 && measuredAngle < entryAngle) Activate();
+				}
+                else
+				{
+                    if (measuredAngle > exitAngle) Deactivate();
+				}
 			}
         }
 
-		private void OnDrawGizmos()
+        void DrawCone(Vector3 source, float length, float coneAngle, Vector3 normal)
+        {
+            Vector3 center = source + (normal * length);
+            // so we want to draw a single circle at a specific distance.
+            float radius = Mathf.Tan(coneAngle * Mathf.Deg2Rad) * length;
+
+            DebugExtension.DrawCircle(center, normal, Gizmos.color, radius);
+
+            // then draw our connecting lines
+            float iter = 360 * 0.25f;
+            for (int i = 0; i < 4; i++)
+            {
+                Vector3 startPoint = ((Vector3.forward) * radius);
+                Vector3 destination = Quaternion.AngleAxis(i * iter, normal) *
+                    startPoint;
+                Gizmos.DrawLine(source, source + (normal * length) + destination);
+            }
+        }
+
+        [Range(0,1)]
+        public float DrawLength = 0.2f;
+
+        private void OnDrawGizmos()
 		{
 		    if(hand)
 			{
+                Gizmos.matrix = Matrix4x4.identity;
                 Gizmos.color = Color.blue;
                 Vector3 rayOrigin = hand.GetAnchorPose(AnchorPoint.Palm).position;
                 Gizmos.DrawRay(rayOrigin,
                     palmDirection);
 
-                Gizmos.color = Color.red;
+                DrawCone(rayOrigin, DrawLength, entryAngle,
+                    palmDirection);
+
+                Gizmos.color = (IsActive) ? Color.green : Color.red;
+                DrawCone(rayOrigin, DrawLength, exitAngle,
+                    palmDirection);
+
+                Gizmos.color = Color.blue;
                 Gizmos.DrawRay(rayOrigin, comparisonDirection);
 			}
 		}
