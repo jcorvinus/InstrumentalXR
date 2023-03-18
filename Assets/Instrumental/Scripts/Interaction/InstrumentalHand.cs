@@ -46,11 +46,11 @@ namespace Instrumental.Interaction
 		bool ringIsExtended = false;
 		bool pinkyIsExtended = false;
 
-		[SerializeField] float thumbCurl = 0;
-		[SerializeField] float indexCurl = 0;
-		[SerializeField] float middleCurl = 0;
-		[SerializeField] float ringCurl = 0;
-		[SerializeField] float pinkyCurl = 0;
+		float thumbCurl = 0;
+		float indexCurl = 0;
+		float middleCurl = 0;
+		float ringCurl = 0;
+		float pinkyCurl = 0;
 
 		public bool ThumbIsExtended { get { return thumbIsExtended; } }
 		public bool IndexIsExtended { get { return indexIsExtended; } }
@@ -66,8 +66,8 @@ namespace Instrumental.Interaction
 
 		public float PinkyCurl { get { return pinkyCurl; } }
 
-		const float dotCutoff = 0.45f;
-		const float thumbDotCutoff = 0.31f;
+		const float curlCutoff = 0.3f;
+		const float thumbCurlCutoff = 0.31f;
 
 		private static InstrumentalHand leftHand;
 		private static InstrumentalHand rightHand;
@@ -116,7 +116,7 @@ namespace Instrumental.Interaction
 		{
 			float signedAngle = Vector3.SignedAngle(baseDirection, forward, axis);
 
-			if (signedAngle < 0 && signedAngle > -30) signedAngle = 0;
+			if (signedAngle < 0 && signedAngle > -60) signedAngle = 0;
 			else if (signedAngle < 0 /*&& signedAngle > -130*/)
 			{
 				float absExtra = Mathf.Abs(signedAngle);
@@ -142,23 +142,17 @@ namespace Instrumental.Interaction
 			Vector3 ringForward = ringPose.rotation * Vector3.forward;
 			Vector3 pinkyForward = pinkyPose.rotation * Vector3.forward;
 
-			float thumbDot = Vector3.Dot(thumbForward, palmDirection);
-			float indexDot = Vector3.Dot(indexForward, palmDirection);
-			float middleDot = Vector3.Dot(middleForward, palmDirection);
-			float ringDot = Vector3.Dot(ringForward, palmDirection);
-			float pinkyDot = Vector3.Dot(pinkyForward, palmDirection);
-
-			thumbCurl = GetFingerCurl(GetFingerAngle(palmDirection, thumbForward, palmThumbRef));
+			thumbCurl = GetFingerCurl(GetFingerAngle(palmThumbRef, thumbForward, palmDirection));
 			indexCurl = GetFingerCurl(GetFingerAngle(palmDirection, indexForward, palmThumbRef));
 			middleCurl = GetFingerCurl(GetFingerAngle(palmDirection, middleForward, palmThumbRef));
 			ringCurl = GetFingerCurl(GetFingerAngle(palmDirection, ringForward, palmThumbRef));
 			pinkyCurl = GetFingerCurl(GetFingerAngle(palmDirection, pinkyForward, palmThumbRef));
 
-			indexIsExtended = (indexDot > dotCutoff);
-			middleIsExtended = (middleDot > dotCutoff);
-			ringIsExtended = (ringDot > dotCutoff);
-			pinkyIsExtended = (pinkyDot > dotCutoff);
-			thumbIsExtended = (thumbDot > thumbDotCutoff); // it does look like the thumb is not extended when it's lower than 0.4 to 0.2 or so
+			indexIsExtended = (indexCurl < curlCutoff);
+			middleIsExtended = (middleCurl < curlCutoff);
+			ringIsExtended = (ringCurl < curlCutoff);
+			pinkyIsExtended = (pinkyCurl < curlCutoff);
+			thumbIsExtended = (thumbCurl < thumbCurlCutoff); // it does look like the thumb is not extended when it's lower than 0.4 to 0.2 or so
 		}
 
         // Update is called once per frame
