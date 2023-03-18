@@ -45,10 +45,12 @@ namespace Instrumental.Interaction.VirtualJoystick
 
 		private void OnEnable()
 		{
+            enabledTime = 0;
             outerRing.enabled = true;
             outerRing.transform.localScale = Vector3.zero;
             innerRing.enabled = true;
             innerRing.transform.localScale = Vector3.zero;
+            outerRing.transform.position = transform.position;
 		}
 
 		private void OnDisable()
@@ -73,7 +75,7 @@ namespace Instrumental.Interaction.VirtualJoystick
                 float outerTValue = Mathf.InverseLerp(0, introAnimDuration, enabledTime);
                 float innerTValue = Mathf.InverseLerp(innerRingTimeOffset, introAnimDuration, enabledTime);
 
-                outerRing.transform.localPosition = Vector3.Lerp(Vector3.zero, outerRingPoint, outerTValue);
+                outerRing.transform.position = transform.TransformPoint(Vector3.Lerp(Vector3.zero, outerRingPoint, outerTValue));
                 outerRing.transform.localScale = Vector3.Lerp(Vector3.zero, Vector3.one, scaleCurve.Evaluate(outerTValue));
 
                 innerRing.transform.position = transform.position + Vector3.Lerp(Vector3.zero, innerRingPoint, innerTValue);

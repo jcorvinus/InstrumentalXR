@@ -14,24 +14,33 @@ namespace Instrumental.Interaction.VirtualJoystick
 
 		private void Awake()
 		{
-            hand = InstrumentalHand.LeftHand;
             logicTrigger = GetComponent<LogicTrigger>();
             ringActivator = GetComponentInChildren<RingActivator>();
+            GetHand();
 		}
+
+        void GetHand()
+		{
+            hand = InstrumentalHand.LeftHand;
+        }
 
 		// Start is called before the first frame update
 		void Start()
         {
             ringActivator.enabled = false;
+            GetHand();
         }
 
         // Update is called once per frame
         void Update()
         {
-            Pose anchorPose = hand.GetAnchorPose(AnchorPoint.Palm);
-            ringActivator.transform.position = anchorPose.position;
+            if (hand)
+            {
+                Pose anchorPose = hand.GetAnchorPose(AnchorPoint.Palm);
+                ringActivator.transform.position = anchorPose.position;
 
-            ringActivator.enabled = logicTrigger.IsActive;
+                ringActivator.enabled = logicTrigger.IsActive;
+            }
         }
     }
 }
