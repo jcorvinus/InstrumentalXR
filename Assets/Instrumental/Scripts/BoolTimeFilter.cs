@@ -16,15 +16,39 @@ namespace Instrumental
         float timer;
         float threshold = 0.1f;
 
+		public bool State { get { return state; } }
 
         public void SetValue(bool newState, bool skipFilter)
 		{
-            // todo: figure this out
+			if (skipFilter)
+			{
+				state = newState;
+				inputState = newState;
+				timer = 0;
+			}
+			else
+			{
+				inputState = newState;
+			}
 		}
 
 		private void Update()
 		{
-			
+			if(state != inputState)
+			{
+                if(timer >= threshold)
+				{
+					state = inputState;
+				}
+				else
+				{
+					timer += Time.deltaTime;
+				}
+			}
+            else
+			{
+                timer = 0;
+			}
 		}
 	}
 }
