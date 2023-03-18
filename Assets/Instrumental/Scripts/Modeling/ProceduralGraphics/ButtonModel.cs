@@ -165,8 +165,14 @@ namespace Instrumental.Modeling.ProceduralGraphics
 		#region Mesh Generation
 		void GenerateFaceMesh()
 		{
-			if (_faceMesh == null) _faceMesh = new Mesh();
-			_faceMesh.MarkDynamic();
+			if (_faceMesh == null)
+			{
+				_faceMesh = new Mesh();
+				_faceMesh.MarkDynamic();
+			}
+			_faceMesh.colors = null;
+			_faceMesh.triangles = null;
+			_faceMesh.vertices = null;
 
 			int bridgeCount = 0;
 
@@ -272,8 +278,14 @@ namespace Instrumental.Modeling.ProceduralGraphics
 		{
 			if (hasRim)
 			{
-				if (_rimMesh == null) _rimMesh = new Mesh();
-				_rimMesh.MarkDynamic();
+				if (_rimMesh == null)
+				{
+					_rimMesh = new Mesh();
+					_rimMesh.MarkDynamic();
+				}
+				_rimMesh.colors = null;
+				_rimMesh.triangles = null;
+				_rimMesh.vertices = null;
 
 				int vertexBaseID = 0;
 				rimOuterLoopBack = ModelUtils.CreateEdgeLoop(ref vertexBaseID, closeLoop,
