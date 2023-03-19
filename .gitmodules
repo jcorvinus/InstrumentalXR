@@ -1,0 +1,3 @@
+[submodule "Assets/InstrumentalCore"]
+	path = Assets/InstrumentalCore
+	url = https://github.com/jcorvinus/InstrumentalCore
