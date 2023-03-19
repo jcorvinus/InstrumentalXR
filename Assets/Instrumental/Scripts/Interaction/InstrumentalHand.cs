@@ -22,7 +22,9 @@ namespace Instrumental.Interaction
 
 	public class InstrumentalHand : MonoBehaviour
 	{
-		SteamVR_Behaviour_Pose handPose;
+		InstrumentalBody body;
+
+		[SerializeField] SteamVR_Behaviour_Skeleton[] handAvatars;
 		[SerializeField] SteamVR_Behaviour_Skeleton dataHand;
 		private Handedness hand;
 		public Handedness Hand { get { return hand; } }
@@ -77,14 +79,13 @@ namespace Instrumental.Interaction
 
 		private void Awake()
 		{
-            handPose = GetComponent<SteamVR_Behaviour_Pose>();
-
-			if (handPose.inputSource == SteamVR_Input_Sources.LeftHand)
+			body = GetComponentInParent<InstrumentalBody>();
+			if (dataHand.inputSource == SteamVR_Input_Sources.LeftHand)
 			{
 				hand = Handedness.Left;
 				leftHand = this;
 			}
-			else if (handPose.inputSource == SteamVR_Input_Sources.RightHand)
+			else if (dataHand.inputSource == SteamVR_Input_Sources.RightHand)
 			{
 				hand = Handedness.Right;
 				rightHand = this;
@@ -98,8 +99,16 @@ namespace Instrumental.Interaction
 		// Start is called before the first frame update
 		void Start()
         {
-
+			UpdateHandAvatars();
         }
+
+		void UpdateHandAvatars()
+		{
+			for (int i = 0; i < handAvatars.Length; i++)
+			{
+				handAvatars[i].gameObject.SetActive(i == (int)body.Avatar);
+			}
+		}
 
 		void GetAnchorPoses()
 		{
@@ -158,6 +167,7 @@ namespace Instrumental.Interaction
         // Update is called once per frame
         void Update()
         {
+			UpdateHandAvatars();
 			GetAnchorPoses();
 			CalculateExtension();
         }
