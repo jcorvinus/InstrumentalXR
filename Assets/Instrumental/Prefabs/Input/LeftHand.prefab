@@ -834,6 +834,8 @@ MonoBehaviour:
   - {fileID: 1160357974179523563}
   - {fileID: 5762391000864631694}
   dataHand: {fileID: 8547949597477311703}
+  pinchMaxDistance: 0.09
+  pinchMinDistance: 0.01
 --- !u!114 &3360380928463394925
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1857,7 +1859,7 @@ MonoBehaviour:
   onTrackingChanged:
     m_PersistentCalls:
       m_Calls: []
-  mirroring: 1
+  mirroring: 0
   fallbackPoser: {fileID: 0}
   fallbackCurlAction:
     actionPath: 

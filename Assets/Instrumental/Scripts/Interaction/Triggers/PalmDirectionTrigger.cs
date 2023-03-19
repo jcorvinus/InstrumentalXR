@@ -6,7 +6,7 @@ using Instrumental.Interaction;
 
 namespace Instrumental.Interaction.Triggers
 {
-    public class PalmDirectionTrigger : Trigger
+    public class PalmDirectionTrigger : PoseTrigger
 	{
 		public enum DirectionToCheck
         {

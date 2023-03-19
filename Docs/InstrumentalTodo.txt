@@ -103,6 +103,14 @@ Doing some stuff on the virtual joystick interaction. Uh that was cool I guess l
 
 Back to working on triggers though and it looks like I might want to refactor some stuff - palmdirectiontrigger looks like it's going to have some stuff in common with finger extension trigger, so perhaps I can use inheritance there to avoid code duplication yeye
 
+Alright looking at triggers again: I want to get around to adding the continuous feedback variable I'd been thinking of. One issue though: I was only thinking distance to activation. There are other cases we could consider:
+
+- distance to activation
+- intensity of current activation
+- distance to deactivation
+
+hmm. Idon't think intensity of current activation is worth it. If we drop it then we can have the continuous value represent 'distance to activation' and 'distance to deactivation' with a single variable that changes meaning depending on the current state.
+
 ------------------------------------
 Solving the 'tightly packed gizmos' issue:
 perhaps we can have a single ball-shaped gizmo that expands when hovered near, into a radial segment of other balls. The other balls can show axial constraints and names as you get closer to them. (Maybe we can do this craigslist-maps style, where the number of gizmos underneath can be a number inside of a ball)

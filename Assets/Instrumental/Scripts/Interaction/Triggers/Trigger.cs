@@ -11,7 +11,16 @@ namespace Instrumental.Interaction.Triggers
 
         bool isActive = false;
 
+        /// <summary>
+        /// A continuous 0-1 value that triggers can use to specify
+        /// how close they are to activation/deactivation. Feedback components
+        /// can use this for audio/visual/haptics to explain the trigger's current
+        /// state
+        /// </summary>
+        protected float feedback;
+
         public bool IsActive { get { return isActive; } }
+        public float Feedback { get { return feedback; } }
 
         public void Activate()
 		{

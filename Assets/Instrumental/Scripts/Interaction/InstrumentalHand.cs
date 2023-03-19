@@ -17,8 +17,25 @@ namespace Instrumental.Interaction
         IndexTip=3,
         MiddleTip=4,
 		RingTip=5,
-		PinkyTip=6
-    }
+		PinkyTip= 6
+	}
+
+	public enum Finger
+	{ 
+		Thumb=0,
+		Index=1,
+		Middle=2,
+		Ring=3,
+		Pinky=4
+	}
+
+	public struct PinchInfo
+	{
+		public Finger Finger;
+		public Vector3 PinchCenter;
+		public float PinchDistance;
+		public float PinchAmount;
+	}
 
 	public class InstrumentalHand : MonoBehaviour
 	{
@@ -35,6 +52,7 @@ namespace Instrumental.Interaction
 		const float palmUpOffset = 0.06f;
 		const float palmRightOffset = 0.0074f;
 
+		#region finger extension and curls
 		Pose palmPose;
 		Pose thumbPose;
 		Pose indexPose;
@@ -53,7 +71,18 @@ namespace Instrumental.Interaction
 		float middleCurl = 0;
 		float ringCurl = 0;
 		float pinkyCurl = 0;
+		#endregion
 
+		#region Pinch stuff
+		PinchInfo[] pinches;
+
+		[Range(0,0.1f)]
+		[SerializeField] float pinchMaxDistance=0.09f;
+		[Range(0,0.1f)]
+		[SerializeField] float pinchMinDistance = 0.01f;
+		#endregion
+
+		#region Finger Extension and curl accessors
 		public bool ThumbIsExtended { get { return thumbIsExtended; } }
 		public bool IndexIsExtended { get { return indexIsExtended; } }
 		public bool MiddleIsExtended { get { return middleIsExtended; } }
@@ -67,6 +96,34 @@ namespace Instrumental.Interaction
 		public float RingCurl { get { return ringCurl; } }
 
 		public float PinkyCurl { get { return pinkyCurl; } }
+		#endregion
+
+		#region Pinch Accessors
+		public bool HasPinchInfo(Finger finger)
+		{
+			return (finger != Finger.Thumb);
+		}
+
+		public PinchInfo GetPinchInfo(Finger finger)
+		{
+			if(finger != Finger.Thumb)
+			{
+				return pinches[(int)finger];
+			}
+			else
+			{
+				Debug.LogError("No pinch for thumb");
+				return new PinchInfo();
+			}
+		}
+
+		/// <summary>
+		/// The distance used for a 'fully open' pinch gesture, useful for
+		/// pinch based visualizations. Does not tell you that the pinch is active
+		/// </summary>
+		public float PinchMaxDistance { get { return pinchMaxDistance; } }
+		public float PinchMinDistance { get { return pinchMinDistance; } }
+		#endregion
 
 		const float curlCutoff = 0.3f;
 		const float thumbCurlCutoff = 0.31f;
@@ -80,6 +137,9 @@ namespace Instrumental.Interaction
 		private void Awake()
 		{
 			body = GetComponentInParent<InstrumentalBody>();
+
+			pinches = new PinchInfo[5];
+
 			if (dataHand.inputSource == SteamVR_Input_Sources.LeftHand)
 			{
 				hand = Handedness.Left;
@@ -170,7 +230,58 @@ namespace Instrumental.Interaction
 			UpdateHandAvatars();
 			GetAnchorPoses();
 			CalculateExtension();
-        }
+			ProcessPinches();
+		}
+
+		void ProcessPinches()
+		{
+			pinches[(int)Finger.Index] = ProcessPinch(Finger.Index);
+			pinches[(int)Finger.Middle] = ProcessPinch(Finger.Middle);
+			pinches[(int)Finger.Ring] = ProcessPinch(Finger.Ring);
+			pinches[(int)Finger.Pinky] = ProcessPinch(Finger.Pinky);
+		}
+
+		PinchInfo ProcessPinch(Finger finger)
+		{
+			Vector3 thumbTip, fingerTip = Vector3.zero;
+			Vector3 pinchCenter = Vector3.zero;
+			float pinchDistance = 0, pinchAmount = 0;
+			thumbTip = thumbPose.position;
+
+			switch (finger)
+			{
+				case Finger.Thumb:
+					break;
+				case Finger.Index:
+					fingerTip = indexPose.position;
+					break;
+				case Finger.Middle:
+					fingerTip = middlePose.position;
+					break;
+				case Finger.Ring:
+					fingerTip = ringPose.position;
+					break;
+				case Finger.Pinky:
+					fingerTip = pinkyPose.position;
+					break;
+				default:
+					break;
+			}
+
+			pinchCenter = (fingerTip + thumbTip) * 0.5f;
+
+			Vector3 offset = (fingerTip - thumbTip);
+			pinchDistance = offset.magnitude;
+			pinchAmount = 1 - Mathf.InverseLerp(pinchMinDistance, pinchMaxDistance, pinchDistance);
+
+			return new PinchInfo()
+			{
+				Finger = finger,
+				PinchAmount = pinchAmount,
+				PinchDistance = pinchDistance,
+				PinchCenter = pinchCenter
+			};
+		}
 
         public Pose GetAnchorPose(AnchorPoint anchorPoint)
 		{
