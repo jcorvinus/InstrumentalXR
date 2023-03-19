@@ -31,7 +31,6 @@ namespace Instrumental.Interaction
 
 	public struct PinchInfo
 	{
-		public Finger Finger;
 		public Vector3 PinchCenter;
 		public float PinchDistance;
 		public float PinchAmount;
@@ -81,6 +80,10 @@ namespace Instrumental.Interaction
 		[Range(0,0.1f)]
 		[SerializeField] float pinchMinDistance = 0.01f;
 		#endregion
+
+		PinchInfo graspPinch;
+
+		public PinchInfo GraspPinch { get { return graspPinch; } }
 
 		#region Finger Extension and curl accessors
 		public bool ThumbIsExtended { get { return thumbIsExtended; } }
@@ -239,6 +242,8 @@ namespace Instrumental.Interaction
 			pinches[(int)Finger.Middle] = ProcessPinch(Finger.Middle);
 			pinches[(int)Finger.Ring] = ProcessPinch(Finger.Ring);
 			pinches[(int)Finger.Pinky] = ProcessPinch(Finger.Pinky);
+
+			graspPinch = ProcessGraspPinch();
 		}
 
 		PinchInfo ProcessPinch(Finger finger)
@@ -276,14 +281,38 @@ namespace Instrumental.Interaction
 
 			return new PinchInfo()
 			{
-				Finger = finger,
 				PinchAmount = pinchAmount,
 				PinchDistance = pinchDistance,
 				PinchCenter = pinchCenter
 			};
 		}
 
-        public Pose GetAnchorPose(AnchorPoint anchorPoint)
+		PinchInfo ProcessGraspPinch()
+		{
+			PinchInfo indexPinch, middlePinch;
+			indexPinch = GetPinchInfo(Finger.Index);
+			middlePinch = GetPinchInfo(Finger.Middle);
+
+			float indexAmount = indexPinch.PinchAmount, middleAmount = middlePinch.PinchAmount;
+			float blendValue = 1 - Mathf.Abs(indexAmount - middleAmount);
+			if(blendValue < 0.5f)
+			{
+				blendValue *= 2;
+			}
+			else
+			{
+				blendValue = 1 - (blendValue - 0.5f) * 2;
+			}
+
+			return new PinchInfo()
+			{
+				PinchAmount = Mathf.Max(indexPinch.PinchAmount, middlePinch.PinchAmount),
+				PinchCenter = Vector3.Lerp(indexPinch.PinchCenter, middlePinch.PinchCenter, blendValue),
+				PinchDistance = Mathf.Min(indexPinch.PinchDistance, middlePinch.PinchDistance)
+			};
+		}
+
+		public Pose GetAnchorPose(AnchorPoint anchorPoint)
 		{
 			bool flip = hand == Handedness.Left;
 			Vector3 position = Vector3.zero;
