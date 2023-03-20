@@ -2,7 +2,7 @@
 A procedural UI toolkit &amp; spec for creating fully 3d, physics-based, instrument-panel style UI in XR
 
 # Installation instructions:
-Don't. It's not ready yet. Right now I'm in the process of making a new version that doesn't rely on Ultraleap technology.
+Clone this repository. Make sure you do recursive to include the critical submodule [InstrumentalCore](https://github.com/jcorvinus/InstrumentalCore), which now contains all of the important functionality. This was done to make it easier to include in your own projects as a submodule. This main repository now exists primarily as a way for me to work on the framework in a unity project. The current unty version is 2021.3.7f1!
 
 ## This project is in pre-alpha and probably won't work for you. That's OK. Be patient.
 
