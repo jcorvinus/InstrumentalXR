@@ -39,5 +39,10 @@ SOFTWARE.
 // The MIT License (MIT) - https://gist.github.com/bcatcho/1926794b7fd6491159e7
 // Copyright (c) 2015 Brandon Catcho
 
+## Click sound effect by Lebaston100
+https://freesound.org/people/lebaston100/sounds/192271/
+https://creativecommons.org/licenses/by/4.0/
+Modifications: removed silence
+
 ## Everything else
 Wherever not otherwise listed, everything in here is MIT licensed by Joshua Corvinus. https://github.com/jcorvinus/InstrumentalXR/blob/master/LICENSE
