@@ -1,10 +1,14 @@
 - Get a simple resizable panel working.
 - Create a keyvalue/pair binding list for mapping schema controls to runtime controls.
 	- Upon loading a schema (editor or runtime), populate the runtime control list with proper data from the schema.
+- refactor schema 'CreateFromControl' to use a single function, like we do in SetControlSchema
+	- look into automatic creation of schema serialization variables using C# attributes
+	
 	
 - Fillet panel struggles with no radius segments, it's a triangle index bug of some kind.
 - Depth, and extrude handles. Figure out how to change mode of fillet panel to allow extrude
 - use RED chan as a color palette inspiration
+	Alternately, use that designer video from the designer who made a color picking system. https://www.youtube.com/watch?v=HAlIWRcldoc
 - Color picker for panel background and outlines
 - outline and extrude fails if you don't also do back face.
 - Add ability to move the work table height.
@@ -32,12 +36,6 @@ Pull-out heirarchy:
 	-Name (show when hovering or looking)
 	
 	Slider will need some kind of return to center, as well as 'lock to edges' behavior. Perhaps we can do this by directly setting the slider values?
-	
-- graphic group index and connected renderer appear to be getting corrupted in HandleRuntimeAddRemove() ?
-	- Looks like HandleRuntimeAddRemove is getting run twice?
-	- (because detaching and attaching operations get bucketed, it looks like detach is getting called after attach. This might be a bug worthy of reporting. A workaround is to distribute these operations across frames)
-	
-- Graphic group switching runs into issues if you go quickly from palette to panel, works if you slowly go through each zone
 
 - placement controls need to stick to UI panels (Either go kinematic or do force trickery) after they've been placed
 	- make it so that you can throw controls onto UI panels. This is dumb but it should be supported
@@ -54,18 +52,6 @@ Floating object values:
 Mass: 1
 drag: 8
 Angular Drag: 16
-
------------------------------------
-Button edgeloop:
-corner segment is cornerVertCount
-
-0-cornerVertCount: upper left
-cornerVertCount-widthCount: upper
-widthCount-widthCount+cornerVertCount: upperRight
-
-ok looks like I made a silly mistake - the face of the button is at 0 depth, and the back of the button gets pushed into the negative range. It might not be _that_ silly, there's possible logic to it, such as being able to check if the finger is touching by looking to see if the value is negative, but I think I want to fix that now.
-
-New notes: It looks like I had not finished getting the button model rendering properly, and the legacy buttons were thrown together quickly to solve this.
 
 -----------------------------------
 Graphics stuff:
@@ -91,11 +77,10 @@ Material property block data for:
 
 - Also the ability to do cubemaps for shiny stuff
 
+- research using geometry shaders instead of generating on the cpu. Could be WAY faster.
+- finish adding vertex colors to sliders, and gradients to buttons and sliders
+
 -----------------------------------
-Working on the finger glow stuff and have run into a bit of a problem: I have the feedback hands providing a position to the gloabl shader vectors, but have noticed a problem: they appear to be in the wrong place, very far away. Not sure what's up with that. Hmm. My code does try to do some funny stuff, like average the positions together. Oh I think I know what's up. Parentheses problem, bad math.
-
-Yep fixed that. I have a new problem now: it looks like my throw values go in the opposite value: 1 being unpressed and 0 being pressed. Need to see if that's intentional but it would certainly be screwing with things.
-
 moving on to detectors:
 looks like the palm direction is wrong -0 it's doing forward when we really want to do up. Flipping might need to get taken into account, not sure. Also the dot product is not working the way I expected.
 
@@ -109,8 +94,184 @@ Alright looking at triggers again: I want to get around to adding the continuous
 - intensity of current activation
 - distance to deactivation
 
-hmm. Idon't think intensity of current activation is worth it. If we drop it then we can have the continuous value represent 'distance to activation' and 'distance to deactivation' with a single variable that changes meaning depending on the current state.
+hmm. I don't think intensity of current activation is worth it. If we drop it then we can have the continuous value represent 'distance to activation' and 'distance to deactivation' with a single variable that changes meaning depending on the current state.
+
+ok so I just tried out a 'view direction' version of the hand menu opener and while it works and is kinda comfy, I think it might just be easier to flip the script and make it so that the palm is what has to face the camera. I was originally thinking of having two detectors, one for palm->facing head and another for head->palm but why bother? That's two where one would suffice. And I'm pretty sure the palm direction trigger has an enum for this mode anyways, the behavior just has to be filled out. Actually hmm the other slot in the enum is 'head forward' which might just be weird phrasing.
+
+----------------------
+Sounds used:
+https://freesound.org/people/lebaston100/sounds/192271/
+https://creativecommons.org/licenses/by/4.0/
+Modifications: removed silence
+
+-----------------------
+So I'm thinking I want to achieve the following goals:
+- data independence
+- 3d model retargeting
+
+Doing both of these at once is tricky. Doing one then the other is easier, but then there's the problem of, I want model retargeting _now_ and it's dependent upon data independence, which means I'd need to do both. Also, if I do data independence then I just made some recent work a bit redundant since I could always just throw Leap's SDK back in there. That said, being free of Leap's SDK does have some benefits, such as... well, not requiring it. Although it would still be nice to let people do hookups for it, although really what I want is OpenXR as a data target.
+
+With Data Independence, the steps involved are:
+- design a data format for tracking poses.
+- create an enum or otherwise make a logic switcher that allows for deciding which data input to use for the conversion
+- Ensure that not having every SDK for every data source hooked up at all times does NOT result in any compilation errors - will probably need a switching interface.
+- do we include finger width and palm width? Do we include forearms? Will we ever support physics interactions? Could get a little crazy there.
+
+HandData (struct)
+IHandDataSource (abstract class)
+	- PlaybackHand (gets pushed onto from a recording class? Told when it updates? Recording will need to record head poses as well)
+	- Platform Data Hand (pulls directly from a specific tracking source ?)
+	- DataModifier (Used for performing a transformation on hand data. Eventually for extendo hands. Possibly also useful for keyboard hands in that really weird keyboard experiment I wanted to make one day.)
+
+
+Need to figure out how we want to handle spaces. Do we just put the hand data in global space? Relative to an existing space? Relative to the head makes some sense I guess. Do we ever want to expand this into a full skeleton for players? We are probably going to want some of that sweet sweet inferred shoulder position and forward direction. I don't think we'll ever be that far from the origin but floating point bs could be a problem if we just do everything in global space. Maybe I can just make my format identical to the OpenXR hands to make the transition easier later, and convert from steamVR to get running now.
+
+I might just use this with a z flip. It's tempting to 
+https://registry.khronos.org/OpenXR/specs/1.0/html/xrspec.html#_conventions_of_hand_joints
+
+Do we need the ability to deeply chain these? How important is it to have the ability to do things provider style and have lots of providers everywhere? I suppose we can always have the InteractionHand serve as the 'root' for a provider with no hookup. Is this necessary for reach extension hands? Virtual hands? Right now the main reason I want this data abstraction is so I can, for the visual hand models, re-size them to match the player's hand. One thing to think here is that maybe we can make HandAvatar a class that's a thing. Then have it have a type (procedural vs model) and model based ones can have a bind pose. Procedural ones don't need that obviously since they already know how to render with proper fit.
+
+Multiplatform headaches: gameObject hierarchy can be a real pain to mess with, although having objects be enabled/disabled is one good way of making sure an unavailable script never gets called. One big problem in all cases though: If you need to reference scripts from another platform, if they are missing, you will not be able to save prefab updates. This is actually a really big issue. I think that because of this I might really only support recordings, steamVR, and OpenXR hands.
+
+This could be a real pain, and is similar to the really complicated self-assembling user rig from the days of old, but what we could do is put the platform-specific hookups in a separate prefab that can be dropped into a scene and then pointed at the interaction hand camera rig. Not sure.
+
+ok for now I think what I'll do is:
+- 
+
+ugh remember that for your recording hand you might need interpolation/extrapolation or maybe just the ability to pump one frame at a time.
+
+Other reasons: data playback and recording for testing of interaction code. It would be nice to start doing unit and integration tests for things.
+
+hmm. 
+
+For model retargeting:
+- The first, easiest method is a scale retargeting. There are multiple levels to this:
+	- uniform hand scale rescaling based off a single finger's measured length
+	- bind pose retargeting for rotations as well?
+	- Can we support scaling the data to match the proportions of the visual model in addition to the other way around?
+	
+If we do model retargeting before moving to a universal data format, we'll have to write our own version of SteamVR_Behaviour_Skeleton that interacts with the SteamVR_SkeletalAction differently. It'll be nice to have a lightweight one that doesn't have all the blending stuff baked in there.
+
+-----------------------
+AnimationCurve powerOverDistance = new AnimationCurve(new Keyframe(0.0f, 1.0f, 0.0f, 0.0f),
+                                                                          new Keyframe(0.02f, 0.3f, 0.0f, 0.0f));
+																		  
+------------------------------------
+// this code was authored by ChatGPT
+using UnityEngine;
+
+public class SquashEffect : MonoBehaviour
+{
+    // The minimum scale factor that can be applied
+    public float minScaleFactor = 0.02f;
+
+    // The maximum scale factor that can be applied
+    public float maxScaleFactor = 1f;
+
+    // The current scale factor
+    public float scaleFactor;
+
+    private void Update()
+    {
+        // Clamp the scale factor to the min and max values
+        scaleFactor = Mathf.Clamp(scaleFactor, minScaleFactor, maxScaleFactor);
+
+        // Calculate the new x and y scales
+        float xScale = 1f - (1f - scaleFactor) * 2f;
+        float yScale = 1f - (1f - scaleFactor) * 2f;
+
+        // Set the transform's localScale
+        transform.localScale = new Vector3(xScale, yScale, 1f / (xScale * yScale));
+    }
+}
 
 ------------------------------------
 Solving the 'tightly packed gizmos' issue:
 perhaps we can have a single ball-shaped gizmo that expands when hovered near, into a radial segment of other balls. The other balls can show axial constraints and names as you get closer to them. (Maybe we can do this craigslist-maps style, where the number of gizmos underneath can be a number inside of a ball)
+
+-------------------------------------
+Replacing leap features:
+- Physics with soft contact?
+	- different friction modes?
+- Root level object definition (For placement in anchorables)
+- Entire Object anchors (drop slots, inventory, etc)
+- Curved spaces
+	(manual approach)
+	(look into: https://github.com/keenanwoodall/Deform)
+
+Other important UI features:
+- Keyboard (for the love of god please make a good keyboard)
+- Scroll views
+- Inertia field items
+- Throwable workstations (leap style)
+	- Stickables! Never got to implement this in holos but if you chuck something at a surface, it should stick to it!
+	- A big thing about this will probably be a 'project path onto curve.' One unsolved problem I've always had with specifying flight paths based off a target trajectory has been aiming for the next point on a path, and then just oscillating around that path instead of blending into it. Now that you know how to calculate velocity and angular velocity deltas for force piloting, now you might have the tools you need to start investigating this.
+- snapping (maybe look at MRTK for this?) I should look at more examples. I can definitely make it so that my grasp+move system has handling for allowing snapping
+- Item previews (Make a version of an item that has a grey transparent material, or a fresnel rimlight)
+	- Does this include item highlights?
+- whiplash mitigation.
+	One cool idea is directional whiplash mitigation. One thing I noticed is that it's fun to be able to use the whiplash mechanic as a feature for slinging. This makes more sense distally than laterally.
+- Aribtrary, intersection-free line drawing. Remember that rope simulation someone made? Might be good for this.
+- Automatic hand non-intersection handling.
+	-Remember brian's series-of-arc-colliders technique? That might be a good fit here
+	- Also with finger IK?
+- Far field interactions:
+	- Raycasting
+	- extendo hands
+	- summoning
+- hand data recording
+- hand coach
+	- both hand coach and hand data recording mean that maybe upgrading Endocism to work with this is a good idea!
+- Grasp R&D
+	- Furry paws
+	- Tentacles
+	- What other avatar morphologies exist?
+- Get back to UI builder. See if it can be tweaked for wearable UI. Can we make a wearable configuration tool?
+- Update juicy objects creator script, a lot of the files it tries referencing have moved!
+	- Finish merging these sound references in with the UICommon scheme
+- 3d grids! Placement visualizations! Scaffolds!
+- Gizmos and slice planes
+	
+Test cases:
+- Try recreating/porting lucidigital. You did make an updated version of it for SteamVR long ago.
+	- Bring back the file browser(s)? The node tree one should be doable now with your newfound design skills
+	- The terrain browser should be recoverable too.
+- Radial circular button menu, with nesting maybe?
+- reverse curved interfaces - this would be good for wrist displays
+	
+Optimization:
+	- can we use fast inverse square root?
+	(no, it is not as fast)
+	- do we need to mark meshes as modified after regeneration?
+
+Important Core features:
+- Add isTracked tracking to the InstrumentalHands, events on hand tracking gained and lost. We've already got it in the HandData struct, so maybe we'll have to pipe it through HandDataContainer. Actualyl that might make a better place for my velocity estimation and hookup to velocity estimator, although then we'd just have to forward it from instrumentalhand anyways. Honestly I wonder if putting velocity and angular velocity in the HandData is a good idea, we'd have to backfeed it from HandDataContainer after calculation is done but it _does_ make sense to store it there.
+- consider separating grasp out from physics behavior
+	- forces accumulator?
+	- preserving compatibility with physics joints?
+
+Stuff to study:
+- Flexalon, UltimateXR, Hurricane, XRI (Also note you have another doucment called "List of VR frameworks to try out.txt"
+
+CHECK YOUR USAGES OF RIGIDBODY CENTER OF MASS. THEY ARE WRONG FOR SOME THINGS
+
+-------------------
+Curved spaces todo:
+- pose only warp (This might get complicated because unity transforms can only exist in one space at once, but maybe we can handle this by storing the rectilinear pose in the Schema data)
+- update setspace in procgenmodel so it can call an update verts method, then refactor current scripts to ensure they all have something that can do a minimal update of vertex positions without relying on any meshing
+- update mesh bounds
+- add automatic space reference passing to the unity proc gen model components
+- optimize when these events happen - need to make sure it doesn't happen every frame. Although I think I might have gotten confused because of OnValidate and thought that changing the value in the inspector worked meant I was doing it in update, which is definitely not true.
+- look at setspace and clearspace original implementation to figure that out, specifically what should we do if setspace is fed a null value? What do we do if global space doesn't exist?
+- something seems wrong in using space warp in the panel editor scene - the control palette gets inverted in a weird way. Maybe I need to mess with the origin a bit but something seems very wrong. I know I did invert the subtraction to get things looking right in my test scene. idk
+- get text graphics working
+
+-------------------
+Remember to check slottable ideas
+- think about hand tracking tutorial. Can we bring back bits and pieces of it? Would be nice to walk people through it.
+
+just a general idea but what if for wearables, there was a reservation:
+- front side of hands usually goes to the application?
+- back side of hand goes to overlays?
+
+- input refactor has not gone well! Menu is no longer working for sending inputs!
